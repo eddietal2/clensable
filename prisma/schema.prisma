@@ -1,0 +1,95 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// --------------------
+// Users of the system
+// --------------------
+model User {
+  id        String       @id @default(cuid())
+  email     String       @unique
+  firstName String
+  lastName  String
+  createdAt DateTime     @default(now())
+  
+  // Relation to magic tokens for login (magic links)
+  tokens    MagicToken[]
+
+  // Relation to organization
+  orgId     String?      // optional if user may not belong to an org yet
+  org       Org?         @relation("OrgUsers", fields: [orgId], references: [id])
+}
+
+// --------------------
+// Magic links for passwordless login
+// --------------------
+model MagicToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  expiresAt DateTime
+  used      Boolean  @default(false)
+}
+
+// --------------------
+// Organizations (companies that own campaigns)
+// --------------------
+model Org {
+  id        String      @id @default(cuid())
+  name      String
+
+  // Relation to users
+  users     User[]      @relation("OrgUsers")
+
+  // Relation to campaigns
+  campaigns Campaign[]
+}
+
+// --------------------
+// Campaigns belong to an org and track leads and outreach
+// --------------------
+model Campaign {
+  id        String      @id @default(cuid())
+  name      String
+  createdAt DateTime    @default(now())
+
+  orgId     String
+  org       Org         @relation(fields: [orgId], references: [id])
+
+  // Leads (businesses) associated with this campaign
+  leads     Business[]
+
+  // Outreach attempts for this campaign
+  outreach  Outreach[]
+}
+
+// --------------------
+// Businesses (leads) tracked per campaign
+// --------------------
+model Business {
+  id         String     @id @default(cuid())
+  name       String
+  address    String
+  phone      String?
+
+  campaignId String?    // optional if business not yet assigned
+  campaign   Campaign?  @relation(fields: [campaignId], references: [id])
+}
+
+// --------------------
+// Outreach messages (email/SMS) tied to campaigns
+// --------------------
+model Outreach {
+  id         String    @id @default(cuid())
+  email      String
+  status     String    @default("pending") // pending, sent, replied, etc.
+
+  campaignId String
+  campaign   Campaign  @relation(fields: [campaignId], references: [id])
+}

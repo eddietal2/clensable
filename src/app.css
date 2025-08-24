@@ -1,0 +1,17 @@
+@import 'tailwindcss';
+@plugin '@tailwindcss/forms';
+
+main {
+  font-family: system-ui, sans-serif;
+  /* max-width: 1200px; */
+  margin: 0 auto;
+  /* padding: 0 1rem; */
+}
+.jura {
+  font-family: "Jura", sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+}
+section {
+  padding: 4rem 0;
+}
