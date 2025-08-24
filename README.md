@@ -1,4 +1,4 @@
-# sv
+![Logo](.\static\logos\Complete_Logo_Green.png)
 
 Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
 
