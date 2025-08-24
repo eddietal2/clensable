@@ -1,4 +1,7 @@
-![Logo](https://raw.githubusercontent.com/your-username/your-repo/main/static/logos/Complete_Logo_Green.png)
+<p align="center">
+  <img src="static/logos/Complete_Logo_Green.png" alt="Logo" width="300"/>
+</p>
+
 
 Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
 
