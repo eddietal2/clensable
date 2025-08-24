@@ -27,7 +27,10 @@ export const load: PageServerLoad = async ({ url, cookies }) => {
     data: {
       token: sessionToken,
       userId: magicToken.user.id,
-      expiresAt: new Date(Date.now() + 15 * 60 * 1000) // 15 min
+      // Session lasts 24 Hours
+      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000)
+      // Testing: very short session of 5 seconds
+      // expiresAt: new Date(Date.now() + 5 * 1000)
     }
   });
 

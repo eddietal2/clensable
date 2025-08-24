@@ -18,8 +18,8 @@ export const POST: RequestHandler = async ({ request }) => {
 
   // Generate token
   const token = randomBytes(32).toString('hex');
+  // User has 15 minutes to use the magic link
   const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
-  // const expiresAt = new Date(Date.now() + 5 * 1000);
 
 
   await prisma.magicToken.create({
