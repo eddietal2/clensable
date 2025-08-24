@@ -24,6 +24,7 @@ model User {
   // Relation to organization
   orgId     String?      // optional if user may not belong to an org yet
   org       Org?         @relation("OrgUsers", fields: [orgId], references: [id])
+  hasOrg       Boolean    @default(false)
 }
 
 // --------------------
