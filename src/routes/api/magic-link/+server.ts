@@ -19,6 +19,8 @@ export const POST: RequestHandler = async ({ request }) => {
   // Generate token
   const token = randomBytes(32).toString('hex');
   const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
+  // const expiresAt = new Date(Date.now() + 5 * 1000);
+
 
   await prisma.magicToken.create({
     data: { token, userId: user.id, expiresAt }

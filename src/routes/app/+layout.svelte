@@ -30,12 +30,12 @@
 
 <div class="min-h-screen flex bg-gray-100">
   <!-- Sidebar -->
-  <aside class="w-64 bg-gradient-to-b from-[#00CF68] to-[#187967] text-white flex flex-col">
+  <aside class="w-64 fixed top-0 left-0 h-screen bg-gradient-to-b from-[#00CF68] to-[#187967] text-white flex flex-col">
     <div class="p-6 font-bold text-xl border-b border-white/20">
       <img src="/logos/Complete_Logo_White.png" class="h-6" alt="" />
     </div>
 
-    <nav class="flex-1 p-4 space-y-2">
+    <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
       <a href="/app" class="block py-2 px-3 rounded-lg hover:bg-white/10 {isActive('/app') ? 'bg-white/30 font-semibold' : ''}">Home</a>
       <a href="/app/campaigns" class="block py-2 px-3 rounded-lg hover:bg-white/10 {isActive('/app/campaigns') ? 'bg-white/30 font-semibold' : ''}">Campaigns</a>
       <a href="/app/leads" class="block py-2 px-3 rounded-lg hover:bg-white/10 {isActive('/app/leads') ? 'bg-white/30 font-semibold' : ''}">Leads</a>
@@ -55,15 +55,16 @@
   </aside>
 
   <!-- Main content -->
-  <div class="flex-1 flex flex-col">
+  <div class="flex-1 flex flex-col ml-64">
     <!-- Top bar -->
-    <header class="h-16 bg-white shadow flex items-center justify-between px-6">
+    <header class="h-16 bg-white shadow flex items-center justify-between px-6 fixed top-0 left-64 right-0 z-20">
       <h1 class="text-lg font-semibold">{$currentTitle}</h1>
     </header>
 
     <!-- Page Content -->
-    <main class="flex-1 p-6">
+    <main class="flex-1 p-6 mt-16 overflow-auto">
       {@render children?.()}
     </main>
   </div>
 </div>
+
