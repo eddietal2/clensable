@@ -1,11 +1,11 @@
-<p align="center">
+<p align="center" style="margin: 2em 0">
   <img src="static/logos/Complete_Logo_Green.png" alt="Logo" width="300"/>
 </p>
 
 Clensable is a lightweight lead generation and outreach tool for local service businesses (like cleaning companies). It helps you discover local leads, generate AI-powered email/SMS campaigns, send outreach directly via Gmail/Outlook, and track responses—all in one dashboard.
 
-💡 Features (MVP)
-# Lead Discovery
+# 💡 Features (MVP)
+## Lead Discovery
 
 * Search local businesses by city, zip code, or service type.
 
@@ -13,7 +13,7 @@ Clensable is a lightweight lead generation and outreach tool for local service b
 
 * Save and deduplicate leads in your dashboard.
 
-# AI Outreach
+## AI Outreach
 
 * Generate AI-powered emails and SMS messages using GPT-4/5.
 
@@ -21,12 +21,12 @@ Clensable is a lightweight lead generation and outreach tool for local service b
 
 * Queue campaigns and send directly via Gmail/Outlook.
 
-# Lead Export
+## Lead Export
 
 * Export leads to CSV or Google Sheets.
 
 * Track sent emails, opens, and replies directly in your dashboard.
 
-# Dashboard
+## Dashboard
 
 * Simple metrics: leads discovered, emails sent, open rates, reply rates.
