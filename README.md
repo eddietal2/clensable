@@ -2,40 +2,31 @@
   <img src="static/logos/Complete_Logo_Green.png" alt="Logo" width="300"/>
 </p>
 
+Clensable is a lightweight lead generation and outreach tool for local service businesses (like cleaning companies). It helps you discover local leads, generate AI-powered email/SMS campaigns, send outreach directly via Gmail/Outlook, and track responses—all in one dashboard.
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+💡 Features (MVP)
+# Lead Discovery
 
-## Creating a project
+* Search local businesses by city, zip code, or service type.
 
-If you're seeing this, you've probably already done this step. Congrats!
+* Fetch 20–50 leads per campaign via Google Maps/Yelp API.
 
-```sh
-# create a new project in the current directory
-npx sv create
+* Save and deduplicate leads in your dashboard.
 
-# create a new project in my-app
-npx sv create my-app
-```
+# AI Outreach
 
-## Developing
+* Generate AI-powered emails and SMS messages using GPT-4/5.
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+* Preview messages in multiple tones: friendly, professional, direct.
 
-```sh
-npm run dev
+* Queue campaigns and send directly via Gmail/Outlook.
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
+# Lead Export
 
-## Building
+* Export leads to CSV or Google Sheets.
 
-To create a production version of your app:
+* Track sent emails, opens, and replies directly in your dashboard.
 
-```sh
-npm run build
-```
+# Dashboard
 
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+* Simple metrics: leads discovered, emails sent, open rates, reply rates.
