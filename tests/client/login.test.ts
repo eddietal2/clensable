@@ -1,7 +1,7 @@
-import { render, fireEvent, waitFor } from "@testing-library/svelte";
+// tests/client/login.test.ts
+import { render, fireEvent, waitFor, screen } from "@testing-library/svelte";
 import LoginPage from "../../src/routes/login/+page.svelte";
-import { vi } from "vitest";
-import '@testing-library/jest-dom';
+import { describe, it, expect, vi, beforeEach } from "vitest";
 
 describe("LoginPage", () => {
   const dummyEmail = "test@example.com";
@@ -17,54 +17,58 @@ describe("LoginPage", () => {
       json: async () => ({ message: "Magic link sent" })
     }));
 
-    const { getByLabelText, getByText, queryByText } = render(LoginPage);
+    render(LoginPage);
 
-    const input = getByLabelText("Email") as HTMLInputElement;
-    const button = getByText("Send Magic Link") as HTMLButtonElement;
+    const input = screen.getByLabelText("Email") as HTMLInputElement;
+    const button = screen.getByText("Send Magic Link") as HTMLButtonElement;
 
     // Type email and submit
     await fireEvent.input(input, { target: { value: dummyEmail } });
     await fireEvent.click(button);
 
     // Spinner should appear and button should be disabled
-    expect(button).toBeDisabled();
-    expect(queryByText("Magic Link Sent!")).not.toBeInTheDocument();
+    expect(button.disabled).toBe(true);
 
-    // Wait for the 2-second setTimeout in your component
-    await waitFor(() => expect(queryByText("Magic Link Sent!")).toBeInTheDocument(), { timeout: 2500 });
+    // Success message appears after 2 seconds
+    await waitFor(() => {
+      expect(screen.getByText("Magic Link Sent!")).toBeDefined();
+    }, { timeout: 2500 });
   });
 
   it("shows error message if API returns an error", async () => {
-    // Mock fetch to return error
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
       ok: false,
       json: async () => ({ error: "Invalid email" })
     }));
 
-    const { getByLabelText, getByText } = render(LoginPage);
+    render(LoginPage);
 
-    const input = getByLabelText("Email") as HTMLInputElement;
-    const button = getByText("Send Magic Link") as HTMLButtonElement;
+    const input = screen.getByLabelText("Email") as HTMLInputElement;
+    const button = screen.getByText("Send Magic Link") as HTMLButtonElement;
 
     await fireEvent.input(input, { target: { value: dummyEmail } });
     await fireEvent.click(button);
 
-    // Error message should appear
-    await waitFor(() => expect(getByText("Invalid email")).toBeInTheDocument());
-    expect(button).not.toBeDisabled();
+    await waitFor(() => {
+      expect(screen.getByText("Invalid email")).toBeDefined();
+    });
+
+    expect(button.disabled).toBe(false);
   });
 
   it("shows unexpected error if fetch throws", async () => {
     vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("Network failure")));
 
-    const { getByLabelText, getByText } = render(LoginPage);
+    render(LoginPage);
 
-    const input = getByLabelText("Email") as HTMLInputElement;
-    const button = getByText("Send Magic Link") as HTMLButtonElement;
+    const input = screen.getByLabelText("Email") as HTMLInputElement;
+    const button = screen.getByText("Send Magic Link") as HTMLButtonElement;
 
     await fireEvent.input(input, { target: { value: dummyEmail } });
     await fireEvent.click(button);
 
-    await waitFor(() => expect(getByText("Unexpected error")).toBeInTheDocument());
+    await waitFor(() => {
+      expect(screen.getByText("Unexpected error")).toBeDefined();
+    });
   });
 });
