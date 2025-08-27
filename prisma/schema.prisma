@@ -43,13 +43,15 @@ model MagicToken {
 // Organizations (companies that own campaigns)
 // --------------------
 model Org {
-  id        String      @id @default(cuid())
-  name      String
+  id          String   @id @default(cuid())
+  name        String
+  zip         String?   // optional for existing rows
+  radius      Int?   // optional for existing rows
+  serviceType String?   // optional for existing rows
 
-  // Relation to users
-  users     User[]      @relation("OrgUsers")
+  stripeCustomerId String?
 
-  // Relation to campaigns
+  users     User[] @relation("OrgUsers")
   campaigns Campaign[]
 }
 

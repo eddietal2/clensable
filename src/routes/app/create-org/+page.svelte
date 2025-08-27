@@ -1,7 +1,13 @@
 <script lang="ts">
-  import { goto } from '$app/navigation'; // optional if you want to navigate after success
+  import { goto } from '$app/navigation';
+  import { onMount, tick } from 'svelte';
+  import { loadStripe } from '@stripe/stripe-js';
+  import type { Stripe, StripeElements, StripeCardElement } from '@stripe/stripe-js';
 
   let step = 1;
+  let saving = false;
+  let loading = false;
+  let errorMsg = '';
 
   // Step 1
   let orgName = '';
@@ -16,13 +22,26 @@
     'Post-Construction'
   ];
 
-  // Step 2
-  let cardNumber = '';
-  let expiry = '';
-  let cvc = '';
+  // Step 2 - Stripe
+  let stripe: Stripe | null = null;
+  let elements: StripeElements | null = null;
+  let cardElement: StripeCardElement | null = null;
 
-  // Step 3
-  let saving = false; // for spinner if desired
+  onMount(async () => {
+    stripe = await loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY as string);
+    if (!stripe) console.error('Stripe failed to load');
+  });
+
+  // Wait until step 2 is active and DOM is ready
+  $: if (step === 2) {
+    tick().then(() => {
+      if (stripe && !elements) {
+        elements = stripe.elements();
+        cardElement = elements.create('card');
+        cardElement.mount('#card-element');
+      }
+    });
+  }
 
   function handleNextStep() {
     step = 2;
@@ -32,39 +51,56 @@
     step = step > 1 ? step - 1 : 1;
   }
 
-  async function handleSubmit(e: Event) {
-    e.preventDefault();
-    if (step === 1) {
-      handleNextStep();
-    } else if (step === 2) {
-      // Save org + payment info to backend
-      saving = true;
-      try {
-        const res = await fetch('/api/create-org', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ orgName, zip, serviceType, radius, cardNumber, expiry, cvc })
-        });
-        const data = await res.json();
+  async function handlePayment() {
+    if (!stripe || !cardElement) {
+      console.error('Stripe or card element not initialized');
+      return;
+    }
 
-        if (res.ok) {
-          // Move to success slide
-          step = 3;
-        } else {
-          alert(data.error || 'Failed to create organization.');
-        }
-      } catch (err) {
-        console.error(err);
-        alert('Unexpected error.');
-      } finally {
-        saving = false;
+    loading = true;
+    errorMsg = '';
+
+    const { error, token } = await stripe.createToken(cardElement);
+
+    if (error) {
+      errorMsg = error.message ?? 'Payment error';
+      loading = false;
+      return;
+    }
+
+    // Send token.id to backend along with org info
+    try {
+      const res = await fetch('/api/create-org', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          orgName,
+          zip,
+          serviceType,
+          radius,
+          stripeToken: token!.id
+        })
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        errorMsg = data.error || 'Payment failed';
+      } else {
+        step = 3; // success slide
       }
+    } catch (err) {
+      console.error(err);
+      errorMsg = 'Unexpected error.';
+    } finally {
+      loading = false;
     }
   }
 </script>
 
 <main>
-  <h1 class="bg-gradient-to-r from-yellow-500 via-yellow-600 to-yellow-700 bg-clip-text text-transparent text-2xl font-bold mb-6">Create Your Organization</h1>
+  <h1 class="bg-gradient-to-r from-yellow-500 via-yellow-600 to-yellow-700 bg-clip-text text-transparent text-2xl font-bold mb-6">
+    Create Your Organization
+  </h1>
 
   <div class="slider">
     <!-- Step Indicator -->
@@ -74,92 +110,63 @@
       <div class={step === 3 ? 'active' : ''}>Success</div>
     </div>
 
-    {#if step < 3}
-      <form on:submit|preventDefault={handleSubmit} class="org-form">
-        {#if step === 1}
-          <!-- Step 1: Org Info -->
-          <label>
-            Organization Name
-            <input type="text" bind:value={orgName} required placeholder="e.g. Sparkle Cleaners" />
-          </label>
+    {#if step === 1}
+      <!-- Step 1: Org Info -->
+      <form on:submit|preventDefault={handleNextStep} class="org-form">
+        <label>
+          Organization Name
+          <input type="text" bind:value={orgName} required placeholder="e.g. Sparkle Cleaners" />
+        </label>
 
-          <label>
-            Zip Code
-            <input type="text" bind:value={zip} required maxlength="5" placeholder="e.g. 90210" />
-          </label>
+        <label>
+          Zip Code
+          <input type="text" bind:value={zip} required maxlength="5" placeholder="e.g. 90210" />
+        </label>
 
-          <label>
-            Service Type
-            <select bind:value={serviceType} required>
-              <option value="" disabled selected>Select service</option>
-              {#each serviceOptions as option}
-                <option value={option}>{option}</option>
-              {/each}
-            </select>
-          </label>
+        <label>
+          Service Type
+          <select bind:value={serviceType} required>
+            <option value="" disabled selected>Select service</option>
+            {#each serviceOptions as option}
+              <option value={option}>{option}</option>
+            {/each}
+          </select>
+        </label>
 
-          <label>
-            Lead Radius (miles)
-            <input type="number" bind:value={radius} min="1" max="50" required />
-          </label>
+        <label>
+          Lead Radius (miles)
+          <input type="number" bind:value={radius} min="1" max="50" required />
+        </label>
 
-          <button type="submit" class="bg-gradient-to-br from-[#00CF68] to-[#187967]">
-            Next: Payment
-          </button>
-        {:else if step === 2}
-          <!-- Step 2: Payment Info -->
-          <label>
-            Card Number
-            <input
-              type="text"
-              bind:value={cardNumber}
-              required
-              placeholder="1234 1234 1234 1234"
-              maxlength="19"
-              on:input={(e) => {
-                let raw = (e.target as HTMLInputElement).value.replace(/\D/g, '');
-                cardNumber = raw.replace(/(.{4})/g, '$1 ').trim();
-              }}
-            />
-          </label>
-
-          <label>
-            Expiry
-            <input
-              type="text"
-              bind:value={expiry}
-              required
-              placeholder="MM/YY"
-              maxlength="5"
-              on:input={(e) => {
-                let raw = (e.target as HTMLInputElement).value.replace(/\D/g, '');
-                expiry = raw.length > 2 ? raw.slice(0,2)+'/'+raw.slice(2,4) : raw;
-              }}
-            />
-          </label>
-
-          <label>
-            CVC
-            <input type="text" bind:value={cvc} required placeholder="123" maxlength="3" />
-          </label>
-
-          <div class="buttons">
-            <button type="button" on:click={handleBackStep} class="bg-gray-300 text-black">
-              Back
-            </button>
-            <button type="submit" class="bg-gradient-to-br from-[#00CF68] to-[#187967]" disabled={saving}>
-              {saving ? 'Saving...' : 'Submit'}
-            </button>
-          </div>
-        {/if}
+        <button type="submit" class="bg-gradient-to-br from-[#00CF68] to-[#187967]">
+          Next: Payment
+        </button>
       </form>
+    {:else if step === 2}
+      <!-- Step 2: Stripe Payment -->
+      <div class="stripe-form">
+        <div id="card-element" class="my-4"></div>
+        {#if errorMsg}
+          <p class="text-red-600">{errorMsg}</p>
+        {/if}
+        <div class="buttons">
+          <button type="button" on:click={handleBackStep} class="bg-gray-300 text-black">Back</button>
+          <button on:click={handlePayment} class="bg-gradient-to-br from-[#00CF68] to-[#187967]" disabled={loading}>
+            {loading ? 'Processing...' : 'Submit Payment & Create Org'}
+          </button>
+        </div>
+      </div>
     {:else}
       <!-- Step 3: Success -->
       <div class="success-slide text-center py-12">
-        <svg class="h-16 mx-auto mb-4" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+        <svg class="h-16 mx-auto mb-4" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 6L9 17l-5-5"/>
+        </svg>
         <h2 class="text-2xl font-bold mb-2">Organization Created!</h2>
         <p class="text-gray-700 mb-6">Your organization has been successfully created and is ready to use.</p>
-        <button class="bg-gradient-to-br from-[#00CF68] to-[#187967]" on:click={() => goto('/')}>Go to Dashboard</button>
+        <button class="bg-gradient-to-br from-[#00CF68] to-[#187967]" on:click={() => goto('/app')}>
+          Go to Dashboard
+        </button>
       </div>
     {/if}
   </div>

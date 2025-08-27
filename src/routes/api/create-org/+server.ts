@@ -1,60 +1,44 @@
 import { prisma } from '$lib/db';
+import Stripe from 'stripe';
 import type { RequestHandler } from './$types';
-import { json } from '@sveltejs/kit';
 
-export const POST: RequestHandler = async ({ request, cookies }) => {
-  try {
-    // 1️⃣ Get the session token from cookies
-    const sessionToken = cookies.get('session');
-    if (!sessionToken) {
-      return json({ error: 'Not authenticated' }, { status: 401 });
+if (!process.env.STRIPE_SECRET_KEY) {
+    throw new Error('STRIPE_SECRET_KEY environment variable is not set');
+}
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
+
+export const POST: RequestHandler = async ({ request, locals }) => {
+    if (!locals.user) return new Response(JSON.stringify({ error: 'Not authenticated' }), { status: 401 });
+
+    const { orgName, zip, serviceType, radius, stripeToken } = await request.json();
+
+    if (!stripeToken) {
+        return new Response(JSON.stringify({ error: 'No stripe token provided' }), { status: 400 });
     }
 
-    // 2️⃣ Validate session
-    const session = await prisma.session.findUnique({
-      where: { token: sessionToken }
+    // Create Stripe Customer and attach payment method
+    const customer = await stripe.customers.create({
+        email: locals.user.email,
+        source: stripeToken,
+        metadata: { userId: locals.user.id }
     });
 
-    if (!session || session.expiresAt < new Date()) {
-      return json({ error: 'Not authenticated' }, { status: 401 });
-    }
-
-    const userId = session.userId;
-
-    // 3️⃣ Parse the POST body
-    const body = await request.json();
-    const { orgName, zip, serviceType, radius } = body;
-
-    if (!orgName || !zip || !serviceType || !radius) {
-      return json({ error: 'Missing fields' }, { status: 400 });
-    }
-
-    // 4️⃣ Create organization
+    // Save org in database using the Stripe customer ID from backend
     const org = await prisma.org.create({
       data: {
         name: orgName,
-        users: {
-          connect: { id: userId } // connect current user
-        }
-      },
-      include: {
-        users: true
+        zip,
+        serviceType,
+        radius,
+        stripeCustomerId: customer.id
       }
     });
 
-    // 5️⃣ Update user to indicate they now have an org
+    // Update user to belong to org
     await prisma.user.update({
-      where: { id: userId },
-      data: {
-        orgId: org.id,
-        hasOrg: true
-      }
+        where: { id: locals.user.id },
+        data: { orgId: org.id, hasOrg: true }
     });
 
-    // ✅ Success
-    return json({ org });
-  } catch (err) {
-    console.error(err);
-    return json({ error: 'Internal server error' }, { status: 500 });
-  }
+    return new Response(JSON.stringify({ success: true, orgId: org.id }));
 };
