@@ -1,7 +1,7 @@
 // src/lib/email.ts
 import * as postmark from "postmark";
 
-const client = new postmark.ServerClient(`${process.env.PUBLIC_POSTMARK_API_KEY}`);
+const client = new postmark.ServerClient(`${process.env.POSTMARK_API_KEY}`);
 
 interface EmailOptions {
   to: string;
