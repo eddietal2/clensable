@@ -1,10 +1,6 @@
 <script lang="ts">
   import { toasts, type Toast } from '$lib/stores/toast';
   import { fly } from 'svelte/transition';
-
-  // Use Svelte's auto-subscription
-  // This will automatically update $toasts whenever the store changes
-  // No need for manual subscribe/unsubscribe
 </script>
 
 <div class="fixed top-4 right-4 space-y-2 z-50">

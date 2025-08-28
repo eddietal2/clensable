@@ -65,6 +65,7 @@
 </script>
 
 <main>
+  {#if !success}
     <div class="bg-gradient-to-r from-[#CFFFE030] to-[#B2F1D670] p-4 mt-14 max-w-2xl rounded-lg border-l-4 border-green-500">
       <h2 class="text-lg font-semibold mb-2">What is a Campaign?</h2>
       <p class="text-gray-700">
@@ -74,12 +75,9 @@
         on the most promising prospects.
       </p>
     </div>
-
-    <div class="max-w-2xl mx-auto p-6 space-y-6 mt-4 bg-white shadow rounded-lg">
-
-  {#if success}
+  {:else}
     <!-- Success Message -->
-    <div class="bg-green-50 border border-green-300 text-green-800 p-6 rounded-lg text-center space-y-4">
+    <div class="bg-green-50 border border-green-300 text-green-800 p-6 mt-14 rounded-lg text-center space-y-4">
       <CheckCircle class="w-10 h-10 mx-auto text-green-600" />
       <h2 class="text-xl font-semibold">Campaign Created Successfully!</h2>
       <p class="text-gray-700">
@@ -94,7 +92,10 @@
         Go to Campaigns
       </button>
     </div>
-  {:else}
+  {/if}
+
+  {#if !success}
+    <div class="max-w-2xl mx-auto p-6 space-y-6 mt-4 bg-white shadow rounded-lg">
     <!-- Form -->
     <!-- <h1 class="text-2xl font-bold">Create a New Campaign</h1> -->
 
@@ -216,8 +217,9 @@
         {/if}
       </button>
     </form>
+   </div>
   {/if}
-    </div>
+ 
 </main>
 
 
