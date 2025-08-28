@@ -64,7 +64,18 @@
   }
 </script>
 
-<div class="max-w-2xl mx-auto mt-10 p-6 space-y-6 mt-20 bg-white shadow rounded-lg">
+<main>
+    <div class="bg-gradient-to-r from-[#CFFFE030] to-[#B2F1D670] p-4 mt-14 max-w-2xl rounded-lg border-l-4 border-green-500">
+      <h2 class="text-lg font-semibold mb-2">What is a Campaign?</h2>
+      <p class="text-gray-700">
+        A campaign is a targeted outreach effort to potential clients for your cleaning services. 
+        It allows you to define the market segment, geographic area, and messaging for your outreach. 
+        Each campaign will track leads, emails sent, replies, and overall effectiveness so you can focus 
+        on the most promising prospects.
+      </p>
+    </div>
+
+    <div class="max-w-2xl mx-auto p-6 space-y-6 mt-4 bg-white shadow rounded-lg">
 
   {#if success}
     <!-- Success Message -->
@@ -121,6 +132,7 @@
           bind:value={targetZip}
           class="w-full border rounded px-3 py-2"
           placeholder="e.g., 90210"
+          maxlength="5"
         />
       </div>
 
@@ -205,4 +217,7 @@
       </button>
     </form>
   {/if}
-</div>
+    </div>
+</main>
+
+
