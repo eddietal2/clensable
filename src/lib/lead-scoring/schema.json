@@ -1,0 +1,25 @@
+{
+  "rules": [
+    {
+      "field": "employees",
+      "condition": "lessThan",
+      "value": 50,
+      "points": 5,
+      "reason": "SMB with less than 50 employees"
+    },
+    {
+      "field": "foundedYear",
+      "condition": "greaterThan",
+      "value": 2018,
+      "points": 10,
+      "reason": "New company"
+    },
+    {
+      "field": "careersPageText",
+      "condition": "regex",
+      "value": "Facilities Manager|Janitorial",
+      "points": -20,
+      "reason": "Likely already has cleaning vendor"
+    }
+  ]
+}
