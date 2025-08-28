@@ -1,4 +1,3 @@
-// src/routes/api/campaigns/+server.ts
 import type { RequestHandler } from './$types';
 import { prisma } from '$lib/db';
 
@@ -33,7 +32,6 @@ export const GET: RequestHandler = async ({ locals }) => {
   }
 };
 
-// Keep your existing POST handler for creating campaigns
 export const POST: RequestHandler = async ({ request, locals }) => {
   try {
     const { name, description, targetZip, radius, category } = await request.json();

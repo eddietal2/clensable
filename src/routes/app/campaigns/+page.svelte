@@ -1,4 +1,3 @@
-<!-- src/routes/campaigns/+page.svelte -->
 <script lang="ts">
   import { onMount } from 'svelte';
   import { FileText } from 'lucide-svelte';
@@ -16,6 +15,7 @@
   let campaigns: Campaign[] = [];
   let errorMsg = '';
   let loading = false;
+  let deletingId: string | null = null;
 
   async function fetchCampaigns() {
     loading = true;
@@ -46,6 +46,29 @@
     }
   }
 
+  async function deleteCampaign(id: string) {
+    const confirmed = confirm('Are you sure you want to delete this campaign?');
+    if (!confirmed) return;
+
+    deletingId = id;
+    try {
+      const res = await fetch(`/api/campaigns/${id}`, { method: 'DELETE' });
+      if (!res.ok) {
+        const data = await res.json();
+        alert(data.error || 'Failed to delete campaign');
+        return;
+      }
+
+      // Remove deleted campaign from UI
+      campaigns = campaigns.filter(c => c.id !== id);
+    } catch (err) {
+      console.error(err);
+      alert('Unexpected error while deleting campaign');
+    } finally {
+      deletingId = null;
+    }
+  }
+
   onMount(() => {
     fetchCampaigns();
   });
@@ -69,7 +92,6 @@
   <!-- Campaigns Table -->
   <section class="bg-white p-6 rounded-lg shadow">
     {#if loading}
-      <!-- Spinner -->
       <div class="mt-6 flex justify-center">
         <svg class="animate-spin h-8 w-8 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -103,7 +125,13 @@
             <td class="px-4 py-2 flex space-x-2">
               <button class="text-xs text-green-600 hover:underline">View</button>
               <button class="text-xs text-yellow-600 hover:underline">Edit</button>
-              <button class="text-xs text-red-600 hover:underline">Delete</button>
+              <button 
+                class="text-xs text-red-600 hover:underline"
+                on:click={() => deleteCampaign(campaign.id)}
+                disabled={deletingId === campaign.id}
+              >
+                {#if deletingId === campaign.id}Deleting...{:else}Delete{/if}
+              </button>
             </td>
           </tr>
           {/each}
