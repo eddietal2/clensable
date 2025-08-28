@@ -1,6 +1,8 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { FileText } from 'lucide-svelte';
+  import { addToast } from '$lib/stores/toast';
+  import ConfirmModal from '$lib/components/ConfirmModal.svelte';
 
   interface Campaign {
     id: string;
@@ -16,6 +18,10 @@
   let errorMsg = '';
   let loading = false;
   let deletingId: string | null = null;
+
+  // Modal state
+  let showConfirm = false;
+  let selectedCampaignId: string | null = null;
 
   async function fetchCampaigns() {
     loading = true;
@@ -46,32 +52,43 @@
     }
   }
 
-  async function deleteCampaign(id: string) {
-    const confirmed = confirm('Are you sure you want to delete this campaign?');
-    if (!confirmed) return;
+  function openConfirm(id: string) {
+    selectedCampaignId = id;
+    showConfirm = true;
+  }
 
-    deletingId = id;
+  function cancelDelete() {
+    selectedCampaignId = null;
+    showConfirm = false;
+  }
+
+  async function handleDelete() {
+    if (!selectedCampaignId) return;
+
+    deletingId = selectedCampaignId;
+
     try {
-      const res = await fetch(`/api/campaigns/${id}`, { method: 'DELETE' });
+      const res = await fetch(`/api/campaigns/${selectedCampaignId}`, { method: 'DELETE' });
+
       if (!res.ok) {
         const data = await res.json();
-        alert(data.error || 'Failed to delete campaign');
+        addToast(data.error || 'Failed to delete campaign', 'error');
         return;
       }
 
-      // Remove deleted campaign from UI
-      campaigns = campaigns.filter(c => c.id !== id);
+      campaigns = campaigns.filter(c => c.id !== selectedCampaignId);
+      addToast('Campaign deleted successfully!', 'success');
     } catch (err) {
       console.error(err);
-      alert('Unexpected error while deleting campaign');
+      addToast('Unexpected error while deleting campaign', 'error');
     } finally {
       deletingId = null;
+      selectedCampaignId = null;
+      showConfirm = false;
     }
   }
 
-  onMount(() => {
-    fetchCampaigns();
-  });
+  onMount(() => fetchCampaigns());
 </script>
 
 <div class="space-y-6 p-6 mt-10">
@@ -126,11 +143,19 @@
               <button class="text-xs text-green-600 hover:underline">View</button>
               <button class="text-xs text-yellow-600 hover:underline">Edit</button>
               <button 
-                class="text-xs text-red-600 hover:underline"
-                on:click={() => deleteCampaign(campaign.id)}
+                class="text-xs text-red-600 hover:underline flex items-center"
+                on:click={() => openConfirm(campaign.id)}
                 disabled={deletingId === campaign.id}
               >
-                {#if deletingId === campaign.id}Deleting...{:else}Delete{/if}
+                {#if deletingId === campaign.id}
+                  <svg class="animate-spin h-4 w-4 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+                  </svg>
+                  Deleting...
+                {:else}
+                  Delete
+                {/if}
               </button>
             </td>
           </tr>
@@ -144,3 +169,15 @@
     {/if}
   </section>
 </div>
+
+<!-- Confirm Modal -->
+{#if showConfirm}
+  <ConfirmModal
+    message="Are you sure you want to delete this campaign?"
+    confirmText="Delete"
+    cancelText="Cancel"
+    loading={deletingId !== null}
+    on:confirm={handleDelete}
+    on:cancel={cancelDelete}
+  />
+{/if}

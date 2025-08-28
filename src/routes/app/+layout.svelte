@@ -2,6 +2,7 @@
   import { page } from '$app/stores';
   import { derived } from 'svelte/store';
   import { User } from 'lucide-svelte';
+  import Toast from '$lib/components/Toast.svelte';
   let { children } = $props();
 
   // Function to check if link is active
@@ -69,4 +70,6 @@
     </main>
   </div>
 </div>
+
+<Toast />
 
