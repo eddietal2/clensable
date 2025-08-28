@@ -1,109 +1,77 @@
+<!-- src/routes/home/+page.svelte -->
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { User, Mail, FileText, CheckCircle } from 'lucide-svelte';
 
-  interface TextBlock {
-    text: string;
-    languageCode: string;
-  }
+  // Example metrics
+  let campaignsCount = 3;
+  let leadsCount = 120;
+  let emailsSent = 250;
+  let emailsPending = 40;
+  let emailsReplied = 75;
 
-  interface GenerativeSummary {
-    disclosureText?: TextBlock;
-    overview?: TextBlock;
-    overviewFlagContentUri?: string;
-  }
-
-  interface Place {
-    displayName: { text: string };
-    formattedAddress: string;
-    nationalPhoneNumber?: string;
-    generativeSummary?: GenerativeSummary;
-    priceLevel?: number;
-    photoUrls?: string[]; // new
-  }
-
-  let places: Place[] = [];
-  let errorMsg = '';
-  let loading = false;
-
-  const zip = '48134';
-  const radius = 30;
-  const category = 'Office Cleaning';
-
-  async function fetchPlaces() {
-    loading = true;
-    errorMsg = '';
-    places = [];
-
-    const textQuery = `${category} near ${zip} within ${radius} miles`;
-
-    try {
-      const res = await fetch('/api/places', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ textQuery })
-      });
-
-      if (!res.ok) {
-        const data = await res.json();
-        errorMsg = data.error || 'Failed to fetch places';
-        return;
-      }
-
-      const data = await res.json();
-      console.log('Fetched places data:', data);
-
-      places = data.places ?? [];
-    } catch (err) {
-      console.error(err);
-      errorMsg = 'Unexpected error while fetching places';
-    } finally {
-      loading = false;
-    }
-  }
-
-  onMount(fetchPlaces);
+  // Placeholder for recent activity
+  let recentActivities = [
+    { title: "Lead added: Acme Co", time: "2h ago" },
+    { title: "Campaign launched: Q4 Detroit Outreach", time: "1d ago" },
+    { title: "Lead scored: Beta LLC", time: "3d ago" }
+  ];
 </script>
 
-<div class="space-y-4">
-  {#if loading}
-    <p>Loading places...</p>
-  {:else if errorMsg}
-    <p class="text-red-600">{errorMsg}</p>
-  {:else if places.length === 0}
-    <p>No places found.</p>
-  {:else}
-    <ul class="space-y-6 mt-20">
-      {#each places as place}
-        <li class="p-4 bg-white rounded shadow">
-          <h3 class="font-semibold">{place.displayName?.text}</h3>
-          {#if place.photoUrls?.length}
-            <img
-              src={place.photoUrls[0]}
-              alt={place.displayName?.text}
-              class="mt-2 rounded shadow w-64"
-            />
-          {/if}
-          <p class="text-gray-500">{place.formattedAddress}</p>
-          {#if place.nationalPhoneNumber}
-            <p class="text-gray-500">{place.nationalPhoneNumber}</p>
-          {/if}
+<div class="space-y-6 p-6">
 
-          {#if place.generativeSummary?.overview}
-            <p class="text-gray-700 italic">
-              {place.generativeSummary.overview.text}
-            </p>
-          {/if}
-          {#if place.generativeSummary?.disclosureText}
-            <p class="text-xs text-gray-400">
-              {place.generativeSummary.disclosureText.text}
-            </p>
-          {/if}
+  <!-- Key Metrics Cards -->
+  <section class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+    <div class="bg-white p-6 rounded-lg shadow flex items-center space-x-4">
+      <FileText class="w-8 h-8 text-green-600" />
+      <div>
+        <h3 class="text-gray-500 font-semibold">Campaigns</h3>
+        <span class="text-2xl font-bold">{campaignsCount}</span>
+      </div>
+    </div>
 
-          {#if place.priceLevel !== undefined}
-            <p>Price Level: {place.priceLevel}</p>
-          {/if}
-        </li>
+    <div class="bg-white p-6 rounded-lg shadow flex items-center space-x-4">
+      <User class="w-8 h-8 text-blue-600" />
+      <div>
+        <h3 class="text-gray-500 font-semibold">Leads</h3>
+        <span class="text-2xl font-bold">{leadsCount}</span>
+      </div>
+    </div>
+
+    <div class="bg-white p-6 rounded-lg shadow flex flex-col space-y-2">
+      <h3 class="text-gray-500 font-semibold flex items-center space-x-2">
+        <Mail class="w-5 h-5 text-yellow-600" />
+        Outreach
+      </h3>
+      <span class="text-sm text-gray-500">Sent: {emailsSent}</span>
+      <span class="text-sm text-gray-500">Pending: {emailsPending}</span>
+      <span class="text-sm text-gray-500">Replied: {emailsReplied}</span>
+    </div>
+  </section>
+
+  <!-- Quick Actions -->
+  <section class="bg-white p-6 rounded-lg shadow flex flex-col sm:flex-row sm:space-x-6 space-y-4 sm:space-y-0">
+    <button class="bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition flex items-center justify-center space-x-2">
+      <FileText class="w-5 h-5" />
+      <span>Create Campaign</span>
+    </button>
+    <button class="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition flex items-center justify-center space-x-2">
+      <User class="w-5 h-5" />
+      <span>Add Leads</span>
+    </button>
+  </section>
+
+  <!-- Recent Activity -->
+  <section class="bg-white p-6 rounded-lg shadow">
+    <h2 class="text-lg font-semibold mb-4 flex items-center space-x-2">
+      <CheckCircle class="w-5 h-5 text-green-600" />
+      Recent Activity
+    </h2>
+    <ul class="space-y-2">
+      {#each recentActivities as activity}
+        <li class="text-gray-500">{activity.time} — {activity.title}</li>
       {/each}
     </ul>
-  {/if}
+  </section>
+
 </div>

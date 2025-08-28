@@ -59,19 +59,19 @@ model Org {
 // Campaigns belong to an org and track leads and outreach
 // --------------------
 model Campaign {
-  id        String      @id @default(cuid())
+  id        String   @id @default(cuid())
   name      String
-  createdAt DateTime    @default(now())
-
+  description String?
+  targetZip String
+  radius    Int
+  category  String
+  createdAt DateTime @default(now())
   orgId     String
-  org       Org         @relation(fields: [orgId], references: [id])
-
-  // Leads (businesses) associated with this campaign
+  org       Org      @relation(fields: [orgId], references: [id])
   leads     Business[]
-
-  // Outreach attempts for this campaign
   outreach  Outreach[]
 }
+
 
 // --------------------
 // Businesses (leads) tracked per campaign

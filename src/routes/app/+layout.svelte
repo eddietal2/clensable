@@ -10,6 +10,7 @@
   const pageTitles: Record<string, string> = {
     '/app': 'Home',
     '/app/campaigns': 'Campaigns',
+    '/app/campaigns/create': 'Create New Campaign',
     '/app/create-org': 'Create Organization',
     '/app/leads': 'Leads',
     '/app/outreach': 'Outreach',
