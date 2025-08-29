@@ -13,13 +13,25 @@
   };
 
   type Lead = {
-    name: string;
-    address: string;
-    phone?: string;
-    score?: number;
-    status: string;
-    photoUrl?: string;
+  name: string;
+  address: string;
+  phone?: string;
+  score?: number;
+  status: string;
+  photoUrl?: string;
+  websiteUri: string;
+  generativeSummary?: {
+    disclosureText: {
+      text: string;
+      languageCode: string;
+    };
+    overview: {
+      text: string;
+      languageCode: string;
+    };
+    overviewFlagContentUri: string;
   };
+};
 
   let campaigns: Campaign[] = [];
   let selectedCampaign: Campaign | null = null;
@@ -59,7 +71,7 @@
     // simulate network delay
     await new Promise(r => setTimeout(r, 500));
 
-    const res = await fetch('/api/places', {
+    const res = await fetch('/api/leads', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -68,14 +80,18 @@
     });
 
     const data = await res.json();
+    
     leads = data.places.map((p: any) => ({
       name: p.displayName?.text ?? 'Unknown',
       address: p.formattedAddress ?? '',
       phone: p.nationalPhoneNumber,
+      websiteUri: p.websiteUri,
+      generativeSummary: p.generativeSummary,
       status: 'New',
       score: Math.floor(Math.random() * 30),
       photoUrl: p.photoUrls?.[0]
     }));
+    console.log(leads);
 
     updatePagination();
     loading = false;
@@ -131,8 +147,6 @@
   onMount(fetchCampaigns);
   onDestroy(() => unsubscribe());
 </script>
-
-
 <main class="flex flex-col gap-6">
   {#if !selectedCampaign}
     <!-- Campaign selection (same as before) -->
@@ -169,7 +183,7 @@
       <div class="flex flex-col md:flex-row justify-between items-center mb-4 gap-4">
       <!-- Page Title -->
       <h1 class="text-xl">
-        <span class="font-bold">Campaign</span> - {selectedCampaign.name} @ Zip Code {selectedCampaign.targetZip}
+        <span class="font-bold">Campaign Leads ({leads.length})</span> - {selectedCampaign.name} @ Zip Code {selectedCampaign.targetZip}
       </h1>
 
       <!-- Pagination -->
@@ -231,26 +245,58 @@
           {/each}
         {:else}
           {#each paginatedLeads as lead}
-            <div class="bg-white rounded-lg shadow p-4 flex items-center hover:shadow-lg transition w-[1000px]">
-                <img 
-                    src={lead.photoUrl ?? `data:image/svg+xml;utf8,${encodeURIComponent(`
-                      <svg width="192" height="192" xmlns="http://www.w3.org/2000/svg">
-                        <rect width="192" height="192" fill="#e2e8f0"/>
-                        <text x="50%" y="50%" font-size="20" text-anchor="middle" fill="#94a3b8" dy=".3em">No Image</text>
-                      </svg>
-                    `)}`}
-                    alt={lead.name} 
-                    class="w-48 h-48 rounded-lg object-cover mr-6 flex-shrink-0"
-                />
-              <div class="flex-1 min-w-0">
+            <div class="bg-white rounded-lg shadow hover:shadow-lg transition w-[1000px] flex flex-col overflow-hidden">
+          <!-- Card Content -->
+          <div class="p-4 flex gap-4">
+            <!-- Lead Image -->
+            <img
+              src={lead.photoUrl ?? `data:image/svg+xml;utf8,${encodeURIComponent(`
+                <svg width="192" height="192" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="192" height="192" fill="#e2e8f0"/>
+                  <text x="50%" y="50%" font-size="20" text-anchor="middle" fill="#94a3b8" dy=".3em">No Image</text>
+                </svg>
+              `)}`}
+              alt={lead.name}
+              class="w-48 h-48 rounded-lg object-cover flex-shrink-0"
+            />
+              
+            <!-- Lead Info -->
+            <div class="flex-1 flex flex-col justify-between min-w-0">
+              <div>
                 <h2 class="font-semibold text-lg truncate">{lead.name}</h2>
                 <p class="text-gray-600 truncate">{lead.address}</p>
+                {#if lead.websiteUri}
+                  <p class="text-blue-600 text-sm truncate">
+                    <a href={lead.websiteUri} target="_blank" rel="noopener noreferrer">
+                      {lead.websiteUri} 🔗
+                    </a>
+                  </p>
+                {/if}
                 {#if lead.phone}<p class="text-gray-500 text-sm truncate">{lead.phone}</p>{/if}
-                <p class="mt-1 font-medium">Score: {lead.score}</p>
-                <!-- <span class="mt-2 inline-block px-3 py-1 rounded bg-gray-400 text-white text-sm">{lead.status}</span> -->
+                <p class="mt-1 font-medium text-gray-700">Score: {lead.score}</p>
+              
+                {#if lead.generativeSummary}
+                  <p class="mt-2 text-gray-500 text-sm line-clamp-3">
+                    <span class="font-bold">Summary:</span> {lead.generativeSummary.overview.text}
+                  </p>
+                {:else}
+                  <p class="mt-2 text-gray-500 text-sm italic">No summary available.</p>
+                {/if}
               </div>
-              <button class={`${greenGradient} text-white px-4 py-2 rounded ml-6 flex-shrink-0`} on:click={()=>moveToOutreach(lead)}>Add to Outreach</button>
             </div>
+          </div>
+        
+          <!-- Bottom Toolbar -->
+          <div class="border-t-2 border-[#99999920] p-4 flex justify-end">
+            <button
+              class={`${greenGradient} text-white text-xs px-5 py-2 rounded-md hover:shadow-md transition`}
+              on:click={() => moveToOutreach(lead)}
+            >
+              Add to Outreach
+            </button>
+          </div>
+        </div>
+
           {/each}
         {/if}
       </div>
@@ -296,7 +342,6 @@
             Next
           </button>
         </div>
-
       {/if}
     </div>
   {/if}

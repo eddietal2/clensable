@@ -1,28 +1,19 @@
-/* 
-  Endpoint to fetch leads from Google Places API based on zip, radius, and category.
-*/
 import type { RequestHandler } from './$types';
-import { scoreLead } from '$lib/lead-scoring/scoring';
-import type { Lead } from '$lib/lead-scoring/scoring';
 
 const GOOGLE_PLACES_URL = 'https://places.googleapis.com/v1/places:searchText';
 
-interface PlacesResult {
-  displayName: string;
-  formattedAddress: string;
-  // add more fields as needed from Google Places
+function buildPhotoUrl(photoName: string, maxWidth = 400) {
+  return `https://places.googleapis.com/v1/${photoName}/media?maxWidthPx=${maxWidth}&key=${process.env.GOOGLE_PLACES_API_KEY}`;
 }
 
 export const POST: RequestHandler = async ({ request }) => {
   try {
-    const { zip, radius, category } = await request.json();
+    const { textQuery } = await request.json();
 
-    // Basic validation
-    if (!zip || !radius || !category) {
-      return new Response(
-        JSON.stringify({ error: 'zip, radius, and category are required' }),
-        { status: 400 }
-      );
+    if (!textQuery) {
+      return new Response(JSON.stringify({ error: 'textQuery is required' }), {
+        status: 400
+      });
     }
 
     // Call Google Places API
@@ -31,12 +22,13 @@ export const POST: RequestHandler = async ({ request }) => {
       headers: {
         'Content-Type': 'application/json',
         'X-Goog-Api-Key': process.env.GOOGLE_PLACES_API_KEY as string,
-        'X-Goog-FieldMask': 'places.displayName,places.formattedAddress,places.priceLevel,places.nationalPhoneNumber,places.generativeSummary,places.location,places.photos'
+        'X-Goog-FieldMask':
+          'places.displayName,places.formattedAddress,places.priceLevel,places.nationalPhoneNumber,places.generativeSummary,places.location,places.photos,places.websiteUri'
       },
-      body: JSON.stringify({
-        textQuery: `${category} near ${zip} within ${radius} miles`
-      })
+      body: JSON.stringify({ textQuery })
     });
+
+    
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -47,33 +39,22 @@ export const POST: RequestHandler = async ({ request }) => {
     }
 
     const data = await response.json();
-    const places: PlacesResult[] = data.places ?? [];
+    console.log(data);
 
-    // Transform Google Places data into your Lead type
-    const leads: Lead[] = places.map((place) => ({
-      name: place.displayName,
-      employees: 20, // placeholder, ideally enrich with LinkedIn/APollo/etc.
-      foundedYear: 2020, // placeholder, ideally enrich
-      industry: category,
-      careersPageText: '', // optional, could scrape the website
-      justMoved: false,
-      hiringSpike: false,
-      reviews: [] // optional, enrich with reviews
-    }));
+    // Attach photoUrls for convenience
+    const enhanced = {
+      places: data.places?.map((p: any) => ({
+        ...p,
+        photoUrls: p.photos?.map((ph: any) => buildPhotoUrl(ph.name)) ?? []
+      }))
+    };
 
-    // Score leads
-    const scoredLeads = leads.map((lead) => ({
-      lead,
-      ...scoreLead(lead)
-    }));
-
-    // Optional: sort descending by score
-    scoredLeads.sort((a, b) => b.score - a.score);
-
-    return new Response(JSON.stringify(scoredLeads), { status: 200 });
-
+    return new Response(JSON.stringify(enhanced), { status: 200 })
+    
+    
+    ;
   } catch (err) {
-    console.error('Unexpected error in /api/leads:', err);
+    console.error('Unexpected error in /api/places:', err);
     return new Response(
       JSON.stringify({ error: 'Unexpected server error' }),
       { status: 500 }
