@@ -3,6 +3,7 @@
   import { greenGradient, grayGradient, buttonBase } from '$lib/styles';
   import { currentCampaign } from '$lib/stores/campaign';
   import { get } from 'svelte/store';
+  import LeadCard from '$lib/components/dashboard/LeadCard.svelte';
 
   type Campaign = {
     id: string;
@@ -13,25 +14,20 @@
   };
 
   type Lead = {
-  name: string;
-  address: string;
-  phone?: string;
-  score?: number;
-  status: string;
-  photoUrl?: string;
-  websiteUri: string;
-  generativeSummary?: {
-    disclosureText: {
-      text: string;
-      languageCode: string;
+    name: string;
+    address?: string;
+    phone?: string;
+    score?: number;
+    status: string;
+    photoUrls?: string[];
+    currentPhotoIndex?: number;
+    websiteUri?: string;
+    generativeSummary?: {
+      disclosureText: { text: string; languageCode: string };
+      overview: { text: string; languageCode: string };
+      overviewFlagContentUri: string;
     };
-    overview: {
-      text: string;
-      languageCode: string;
-    };
-    overviewFlagContentUri: string;
   };
-};
 
   let campaigns: Campaign[] = [];
   let selectedCampaign: Campaign | null = null;
@@ -45,12 +41,10 @@
   let visiblePages: (number | string)[] = [];
   let loading = false;
 
-  // Fetch campaigns
   async function fetchCampaigns() {
     const res = await fetch('/api/campaigns');
     campaigns = await res.json();
 
-    // If store has a campaign, set selectedCampaign
     const storeCampaign = get(currentCampaign);
     if (storeCampaign) {
       const c = campaigns.find(c => c.id === storeCampaign.id);
@@ -58,17 +52,14 @@
     }
   }
 
-  // Fetch leads for a campaign
   async function fetchLeads(campaign: Campaign) {
     selectedCampaign = campaign;
     currentPage = 1;
     leads = [];
     loading = true;
 
-    // Update store so layout dropdown stays in sync
     currentCampaign.set({ id: campaign.id, name: campaign.name });
 
-    // simulate network delay
     await new Promise(r => setTimeout(r, 500));
 
     const res = await fetch('/api/leads', {
@@ -80,7 +71,7 @@
     });
 
     const data = await res.json();
-    
+
     leads = data.places.map((p: any) => ({
       name: p.displayName?.text ?? 'Unknown',
       address: p.formattedAddress ?? '',
@@ -89,16 +80,15 @@
       generativeSummary: p.generativeSummary,
       status: 'New',
       score: Math.floor(Math.random() * 30),
-      photoUrl: p.photoUrls?.[0]
+      photoUrls: p.photoUrls,
+      currentPhotoIndex: 0
     }));
-    console.log(leads);
 
     updatePagination();
     loading = false;
     scrollToTop();
   }
 
-  // Pagination
   function updatePagination() {
     totalPages = Math.ceil(leads.length / leadsPerPage);
     paginatedLeads = leads.slice((currentPage - 1) * leadsPerPage, currentPage * leadsPerPage);
@@ -135,24 +125,33 @@
     alert(`Lead ${lead.name} added to Outreach for ${selectedCampaign?.name}`);
   }
 
-  // Subscribe to currentCampaign store changes (layout dropdown)
+  function prevPhoto(lead: Lead) {
+    if (!lead.photoUrls || lead.photoUrls.length === 0) return;
+    lead.currentPhotoIndex = (lead.currentPhotoIndex! - 1 + lead.photoUrls.length) % lead.photoUrls.length;
+    leads = [...leads]; // trigger reactivity
+  }
+
+  function nextPhoto(lead: Lead) {
+    if (!lead.photoUrls || lead.photoUrls.length === 0) return;
+    lead.currentPhotoIndex = (lead.currentPhotoIndex! + 1) % lead.photoUrls.length;
+    leads = [...leads]; // trigger reactivity
+  }
+
+
   const unsubscribe = currentCampaign.subscribe(storeCampaign => {
     if (!storeCampaign) return;
     const c = campaigns.find(c => c.id === storeCampaign.id);
-    if (c && (!selectedCampaign || c.id !== selectedCampaign.id)) {
-      fetchLeads(c);
-    }
+    if (c && (!selectedCampaign || c.id !== selectedCampaign.id)) fetchLeads(c);
   });
 
   onMount(fetchCampaigns);
   onDestroy(() => unsubscribe());
 </script>
+
 <main class="flex flex-col gap-6">
   {#if !selectedCampaign}
-    <!-- Campaign selection (same as before) -->
     <div class="flex flex-col gap-4 mt-20 max-w-4xl mx-auto text-center">
       <h1 class="text-2xl font-semibold">Select a Campaign</h1>
-        
       {#if campaigns.length === 0}
         <p class="text-gray-600">You have no campaigns yet. Create one first.</p>
         <a href="/app/campaigns/create" class={`${greenGradient} ${buttonBase} mt-4`}>Create Campaign</a>
@@ -177,134 +176,15 @@
         </div>
       {/if}
     </div>
-
   {:else}
     <div class="mt-20 w-full max-w-7xl mx-auto flex flex-col gap-6">
       <div class="flex flex-col md:flex-row justify-between items-center mb-4 gap-4">
-      <!-- Page Title -->
-      <h1 class="text-xl">
-        <span class="font-bold">Campaign Leads ({leads.length})</span> - {selectedCampaign.name} @ Zip Code {selectedCampaign.targetZip}
-      </h1>
+        <h1 class="text-xl">
+          <span class="font-bold">Campaign Leads ({leads.length})</span> - {selectedCampaign.name} @ Zip Code {selectedCampaign.targetZip}
+        </h1>
 
-      <!-- Pagination -->
-      <div class="flex flex-wrap justify-center items-center gap-2">
-        <!-- Previous button -->
-        <button
-          class={`${grayGradient} text-white px-3 py-1.5 rounded-md text-sm w-20 disabled:opacity-50 disabled:cursor-not-allowed`}
-          on:click={prevPage}
-          disabled={currentPage === 1}
-        >
-          Previous
-        </button>
-
-        <!-- Page numbers -->
-        <div class="flex flex-wrap gap-1 justify-center">
-          {#each visiblePages as page}
-            {#if page === '...'}
-              <span class="px-2 py-1 text-gray-400 text-sm select-none">…</span>
-            {:else}
-              <button
-                class={`px-2 py-1 text-sm rounded-md border transition-colors duration-200
-                  ${currentPage === page
-                    ? 'bg-green-600 text-white border-green-600'
-                    : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-green-400'}
-                `}
-                on:click={() => goToPage(Number(page))}
-              >
-                {page}
-              </button>
-            {/if}
-          {/each}
-        </div>
-
-        <!-- Next button -->
-        <button
-          class={`${grayGradient} text-white px-3 py-1.5 rounded-md text-sm w-20 disabled:opacity-50 disabled:cursor-not-allowed`}
-          on:click={nextPage}
-          disabled={currentPage === totalPages}
-        >
-          Next
-        </button>
-      </div>
-    </div>
-
-      <!-- Leads List / Skeleton Loader -->
-      <div class="flex flex-col gap-4">
-        {#if loading}
-          {#each Array(5) as _}
-            <div class="bg-gray-200 animate-pulse rounded-lg p-4 flex w-[1000px] h-62">
-                <div class="w-48 h-48 bg-gray-300 rounded-lg mr-6 flex-shrink-0"></div>
-                <div class="flex-1 space-y-4 min-w-0">
-                    <div class="h-6 bg-gray-300 rounded w-3/4"></div>
-                    <div class="h-4 bg-gray-300 rounded w-5/6"></div>
-                    <div class="h-4 bg-gray-300 rounded w-1/2"></div>
-                    <div class="h-4 bg-gray-300 rounded w-1/3"></div>
-                    <div class="h-8 bg-gray-300 rounded w-32 mt-4"></div>
-                </div>
-            </div>
-          {/each}
-        {:else}
-          {#each paginatedLeads as lead}
-            <div class="bg-white rounded-lg shadow hover:shadow-lg transition w-[1000px] flex flex-col overflow-hidden">
-          <!-- Card Content -->
-          <div class="p-4 flex gap-4">
-            <!-- Lead Image -->
-            <img
-              src={lead.photoUrl ?? `data:image/svg+xml;utf8,${encodeURIComponent(`
-                <svg width="192" height="192" xmlns="http://www.w3.org/2000/svg">
-                  <rect width="192" height="192" fill="#e2e8f0"/>
-                  <text x="50%" y="50%" font-size="20" text-anchor="middle" fill="#94a3b8" dy=".3em">No Image</text>
-                </svg>
-              `)}`}
-              alt={lead.name}
-              class="w-48 h-48 rounded-lg object-cover flex-shrink-0"
-            />
-              
-            <!-- Lead Info -->
-            <div class="flex-1 flex flex-col justify-between min-w-0">
-              <div>
-                <h2 class="font-semibold text-lg truncate">{lead.name}</h2>
-                <p class="text-gray-600 truncate">{lead.address}</p>
-                {#if lead.websiteUri}
-                  <p class="text-blue-600 text-sm truncate">
-                    <a href={lead.websiteUri} target="_blank" rel="noopener noreferrer">
-                      {lead.websiteUri} 🔗
-                    </a>
-                  </p>
-                {/if}
-                {#if lead.phone}<p class="text-gray-500 text-sm truncate">{lead.phone}</p>{/if}
-                <p class="mt-1 font-medium text-gray-700">Score: {lead.score}</p>
-              
-                {#if lead.generativeSummary}
-                  <p class="mt-2 text-gray-500 text-sm line-clamp-3">
-                    <span class="font-bold">Summary:</span> {lead.generativeSummary.overview.text}
-                  </p>
-                {:else}
-                  <p class="mt-2 text-gray-500 text-sm italic">No summary available.</p>
-                {/if}
-              </div>
-            </div>
-          </div>
-        
-          <!-- Bottom Toolbar -->
-          <div class="border-t-2 border-[#99999920] p-4 flex justify-end">
-            <button
-              class={`${greenGradient} text-white text-xs px-5 py-2 rounded-md hover:shadow-md transition`}
-              on:click={() => moveToOutreach(lead)}
-            >
-              Add to Outreach
-            </button>
-          </div>
-        </div>
-
-          {/each}
-        {/if}
-      </div>
-
-      <!-- Pagination -->
-      {#if !loading && paginatedLeads.length > 0}
-        <div class="flex flex-wrap justify-center items-center gap-2 mt-4">
-          <!-- Previous button -->
+        <!-- Pagination -->
+        <div class="flex flex-wrap justify-center items-center gap-2">
           <button
             class={`${grayGradient} text-white px-3 py-1.5 rounded-md text-sm w-20 disabled:opacity-50 disabled:cursor-not-allowed`}
             on:click={prevPage}
@@ -312,8 +192,7 @@
           >
             Previous
           </button>
-      
-          <!-- Page numbers -->
+
           <div class="flex flex-wrap gap-1 justify-center">
             {#each visiblePages as page}
               {#if page === '...'}
@@ -332,8 +211,69 @@
               {/if}
             {/each}
           </div>
-      
-          <!-- Next button -->
+
+          <button
+            class={`${grayGradient} text-white px-3 py-1.5 rounded-md text-sm w-20 disabled:opacity-50 disabled:cursor-not-allowed`}
+            on:click={nextPage}
+            disabled={currentPage === totalPages}
+          >
+            Next
+          </button>
+        </div>
+      </div>
+
+      <!-- Leads List -->
+      <div class="flex flex-col gap-4">
+        {#if loading}
+          {#each Array(5) as _}
+            <div class="bg-gray-200 animate-pulse rounded-lg p-4 flex w-[1000px] h-62">
+              <div class="w-48 h-48 bg-gray-300 rounded-lg mr-6 flex-shrink-0"></div>
+              <div class="flex-1 space-y-4 min-w-0">
+                <div class="h-6 bg-gray-300 rounded w-3/4"></div>
+                <div class="h-4 bg-gray-300 rounded w-5/6"></div>
+                <div class="h-4 bg-gray-300 rounded w-1/2"></div>
+                <div class="h-4 bg-gray-300 rounded w-1/3"></div>
+                <div class="h-8 bg-gray-300 rounded w-32 mt-4"></div>
+              </div>
+            </div>
+          {/each}
+        {:else}
+          {#each paginatedLeads as lead}
+            <LeadCard {lead} {moveToOutreach} />
+          {/each}
+        {/if}
+      </div>
+
+      <!-- Pagination controls at bottom -->
+      {#if !loading && paginatedLeads.length > 0}
+        <div class="flex flex-wrap justify-center items-center gap-2 mt-4">
+          <button
+            class={`${grayGradient} text-white px-3 py-1.5 rounded-md text-sm w-20 disabled:opacity-50 disabled:cursor-not-allowed`}
+            on:click={prevPage}
+            disabled={currentPage === 1}
+          >
+            Previous
+          </button>
+
+          <div class="flex flex-wrap gap-1 justify-center">
+            {#each visiblePages as page}
+              {#if page === '...'}
+                <span class="px-2 py-1 text-gray-400 text-sm select-none">…</span>
+              {:else}
+                <button
+                  class={`px-2 py-1 text-sm rounded-md border transition-colors duration-200
+                    ${currentPage === page
+                      ? 'bg-green-600 text-white border-green-600'
+                      : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-green-400'}
+                  `}
+                  on:click={() => goToPage(Number(page))}
+                >
+                  {page}
+                </button>
+              {/if}
+            {/each}
+          </div>
+
           <button
             class={`${grayGradient} text-white px-3 py-1.5 rounded-md text-sm w-20 disabled:opacity-50 disabled:cursor-not-allowed`}
             on:click={nextPage}
