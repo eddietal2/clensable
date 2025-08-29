@@ -168,7 +168,7 @@
     <div class="mt-20 w-full max-w-7xl mx-auto flex flex-col gap-6">
       <div class="flex flex-col md:flex-row justify-between items-center mb-4 gap-4">
       <!-- Page Title -->
-      <h1 class="text-md">
+      <h1 class="text-xl">
         <span class="font-bold">Campaign</span> - {selectedCampaign.name} @ Zip Code {selectedCampaign.targetZip}
       </h1>
 
