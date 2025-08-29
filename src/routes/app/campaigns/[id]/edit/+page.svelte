@@ -4,6 +4,7 @@
   import { addToast } from '$lib/stores/toast';
   import ConfirmModal from '$lib/components/ConfirmModal.svelte';
   import { page } from '$app/stores';
+  import { greenGradient, backButton, buttonBase, grayGradient } from '$lib/styles';
 
   interface Campaign {
     id: string;
@@ -98,7 +99,7 @@
 <div class="max-w-4xl mx-auto p-6 space-y-6 mt-10">
   <a 
     href="/app/campaigns"
-    class="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 hover:text-gray-900 transition font-medium"
+    class={`${backButton}`}
   >
     <!-- Optional left arrow icon -->
     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -173,14 +174,14 @@
       <div class="flex justify-between">
       <button
         type="submit"
-        class="bg-gradient-to-b from-[#00CF68] to-[#187967] text-white px-4 py-2 rounded-lg hover:from-[#EAB308] hover:to-[#92400E] transition"
+        class={`${greenGradient} ${buttonBase}`}
       >
         {#if saving}Saving...{:else}Save Changes{/if}
       </button>
     
       <a
         href="/app/campaigns/{campaignId}"
-        class="bg-gradient-to-b from-[#D1D5DB] to-[#374151] text-white px-4 py-2 rounded-lg hover:from-[#EAB308] hover:to-[#92400E] transition"
+        class={`${grayGradient} ${buttonBase}`}
       >
         Cancel
       </a>

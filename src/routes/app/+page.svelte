@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import { User, Mail, FileText, CheckCircle } from 'lucide-svelte';
   import { addToast } from '$lib/stores/toast';
+  import { greenGradient, blueGradient, buttonBase } from '$lib/styles';
 
   let campaignsCount: number;
   let leadsCount = 120;
@@ -64,11 +65,11 @@
   <!-- Quick Actions -->
   <section class="bg-white p-6 rounded-lg shadow flex flex-col sm:flex-row sm:space-x-6 space-y-4 sm:space-y-0">
     <a href="/app/campaigns/create"
-      class="bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition flex items-center justify-center space-x-2">
+      class={`${greenGradient} ${buttonBase}`}>
       <FileText class="w-5 h-5" />
       <span>Create Campaign</span>
     </a>
-    <button class="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition flex items-center justify-center space-x-2">
+    <button class={`${blueGradient} ${buttonBase}`}>
       <User class="w-5 h-5" />
       <span>Add Leads</span>
     </button>

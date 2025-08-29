@@ -8,6 +8,7 @@
   import { FileText, Mail, User, CheckCircle } from 'lucide-svelte';
   import { currentCampaign } from '$lib/stores/campaign';
   import { onDestroy } from 'svelte';
+  import { redGradient, backButton, buttonBase, yellowGradient } from '$lib/styles';
 
   interface Lead {
     id: string;
@@ -114,31 +115,31 @@
   {:else if campaign}
     <!-- Header -->
     <div class="flex justify-between items-center">
-        <a 
+      <a 
           href="/app/campaigns"
-          class="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 hover:text-gray-900 transition font-medium"
+          class={`${backButton}`}
         >
           <!-- Optional left arrow icon -->
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
           </svg>
           Back
-        </a>
-        <div class="flex space-x-2">
+      </a>
+      <div class="flex space-x-2">
           <a 
             href={`/app/campaigns/${campaign.id}/edit`}
-            class="bg-gradient-to-b from-[#FACC15] to-[#B59F00] hover:from-[#EAB308] hover:to-[#92400E] text-white px-4 py-2 rounded-lg"
+            class={`${yellowGradient} ${buttonBase}`}
           >
             Edit
           </a>
           <button
-            class="bg-gradient-to-b from-[#F87171] to-[#B91C1C] hover:from-[#EF4444] hover:to-[#991B1B] text-white px-4 py-2 rounded-lg flex items-center"
+            class={`${redGradient} ${buttonBase}`}
             on:click={openConfirm}
             disabled={deletingId === campaign.id}
           >
             {#if deletingId === campaign.id}Deleting...{:else}Delete{/if}
           </button>
-        </div>
+      </div>
     </div>
 
     <!-- Description & Metadata -->

@@ -3,6 +3,7 @@
   import { FileText } from 'lucide-svelte';
   import { addToast } from '$lib/stores/toast';
   import ConfirmModal from '$lib/components/ConfirmModal.svelte';
+  import { greenGradient, blueGradient, buttonBase } from '$lib/styles';
 
   interface Campaign {
     id: string;
@@ -96,10 +97,7 @@
   <div class="flex justify-between items-center">
     <a href="/app/campaigns/create">
       <button 
-        class="bg-gradient-to-b from-[#00CF68] to-[#187967] 
-               text-white px-4 py-2 rounded-lg font-semibold 
-               hover:from-[#00b55c] hover:to-[#145c55] 
-               transition flex items-center space-x-2">
+        class={`${greenGradient} ${buttonBase}`}>
         <FileText class="w-5 h-5" />
         <span>New Campaign</span>
       </button>

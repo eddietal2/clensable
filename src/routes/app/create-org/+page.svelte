@@ -3,6 +3,7 @@
   import { onMount, tick } from 'svelte';
   import { loadStripe } from '@stripe/stripe-js';
   import type { Stripe, StripeElements, StripeCardElement } from '@stripe/stripe-js';
+  import { greenGradient, buttonBase, grayGradient } from '$lib/styles';
 
   let step = 1;
   let saving = false;
@@ -138,7 +139,7 @@
           <input type="number" bind:value={radius} min="1" max="50" required />
         </label>
 
-        <button type="submit" class="bg-gradient-to-br from-[#00CF68] to-[#187967]">
+        <button type="submit" class={`${greenGradient} ${buttonBase}`}>
           Next: Payment
         </button>
       </form>
@@ -150,9 +151,9 @@
           <p class="text-red-600">{errorMsg}</p>
         {/if}
         <div class="buttons">
-          <button type="button" on:click={handleBackStep} class="bg-gray-300 text-black">Back</button>
-          <button on:click={handlePayment} class="bg-gradient-to-br from-[#00CF68] to-[#187967]" disabled={loading}>
-            {loading ? 'Processing...' : 'Submit Payment & Create Org'}
+          <button type="button" on:click={handleBackStep} class={`${grayGradient} ${buttonBase}`}>Back</button>
+          <button on:click={handlePayment} class={`${greenGradient} ${buttonBase}`} disabled={loading}>
+            {loading ? 'Processing...' : 'Create Org'}
           </button>
         </div>
       </div>
@@ -164,7 +165,7 @@
         </svg>
         <h2 class="text-2xl font-bold mb-2">Organization Created!</h2>
         <p class="text-gray-700 mb-6">Your organization has been successfully created and is ready to use.</p>
-        <button class="bg-gradient-to-br from-[#00CF68] to-[#187967]" on:click={() => goto('/app')}>
+        <button class={`${greenGradient} ${buttonBase}`} on:click={() => goto('/app')}>
           Go to Dashboard
         </button>
       </div>

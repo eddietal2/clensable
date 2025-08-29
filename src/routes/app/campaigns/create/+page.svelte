@@ -2,6 +2,7 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { CheckCircle } from "lucide-svelte";
+  import { greenGradient, backButton, buttonBase, grayGradient } from '$lib/styles';
 
   let name = "";
   let description = "";
@@ -66,8 +67,19 @@
 
 <main>
   {#if !success}
-    <div class="bg-gradient-to-b from-[#CFFFE030] to-[#B2F1D670] p-4 mt-14 max-w-2xl rounded-lg border-l-4 border-green-500">
-      <h2 class="text-lg font-semibold mb-2">What is a Campaign?</h2>
+  <div class="mt-14"></div>
+    <a 
+      href="/app/campaigns"
+      class={`${backButton}`}
+    >
+      <!-- Optional left arrow icon -->
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+      </svg>
+      Back
+    </a>
+    <div class="mt-2 bg-gradient-to-b from-[#FACC1510] to-[#B59F0030] p-4 max-w-2xl rounded-lg border-l-4 border-yellow-500">
+      <h2 class="text-2xl font-bold mb-2 jura">What is a Campaign?</h2>
       <p class="text-gray-700">
         A campaign is a targeted outreach effort to potential clients for your cleaning services. 
         It allows you to define the market segment, geographic area, and messaging for your outreach. 
@@ -84,9 +96,7 @@
         Your campaign <strong>{campaignName}</strong> has been created.
       </p>
       <button 
-        class="bg-gradient-to-b from-[#00CF68] to-[#187967] 
-               text-white px-6 py-3 rounded-lg font-semibold 
-               hover:from-[#00b55c] hover:to-[#145c55] transition"
+        class={`${greenGradient} ${buttonBase}`}
         on:click={goToCampaigns}
       >
         Go to Campaigns
@@ -183,10 +193,10 @@
       </div>
 
       <!-- Submit Button -->
-      <button
+      <div class="flex space-x-4 mt-6 justify-between">
+        <button
         type="submit"
-        class="bg-gradient-to-b from-[#00CF68] to-[#187967] text-white px-4 py-2 rounded-lg font-semibold 
-               hover:from-[#00b55c] hover:to-[#145c55] transition flex items-center justify-center"
+        class={`${greenGradient} ${buttonBase}`}
         disabled={showSpinner}
       >
         {#if showSpinner}
@@ -215,7 +225,12 @@
         {:else}
           Create Campaign
         {/if}
-      </button>
+        </button>
+        <a href="/app/campaigns"
+          class={`${grayGradient} ${buttonBase}`}>
+          Cancel
+        </a>
+      </div>
     </form>
    </div>
   {/if}
