@@ -1,4 +1,6 @@
-// /src/routes/api/leads/+server.ts
+/* 
+  Endpoint to fetch leads from Google Places API based on zip, radius, and category.
+*/
 import type { RequestHandler } from './$types';
 import { scoreLead } from '$lib/lead-scoring/scoring';
 import type { Lead } from '$lib/lead-scoring/scoring';
@@ -29,7 +31,7 @@ export const POST: RequestHandler = async ({ request }) => {
       headers: {
         'Content-Type': 'application/json',
         'X-Goog-Api-Key': process.env.GOOGLE_PLACES_API_KEY as string,
-        'X-Goog-FieldMask': 'places.displayName,places.formattedAddress,places.priceLevel'
+        'X-Goog-FieldMask': 'places.displayName,places.formattedAddress,places.priceLevel,places.nationalPhoneNumber,places.generativeSummary,places.location,places.photos'
       },
       body: JSON.stringify({
         textQuery: `${category} near ${zip} within ${radius} miles`
