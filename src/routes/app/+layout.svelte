@@ -3,19 +3,48 @@
   import { derived } from 'svelte/store';
   import { User } from 'lucide-svelte';
   import Toast from '$lib/components/Toast.svelte';
-  import { currentCampaign } from '$lib/stores/campaign';
+  import { currentCampaign, type CampaignStore } from '$lib/stores/campaign';
+  import { onMount } from 'svelte';
 
   let { children } = $props();
 
-  // Function to check if a link is active
+  // ✅ campaigns is reactive
+  let campaigns = $state<CampaignStore[]>([]);
+
+  // Selected campaign ID
+  let selectedCampaignId = $state('');
+
+  // Fetch campaigns from API
+  async function fetchCampaigns() {
+    try {
+      const res = await fetch('/api/campaigns');
+      if (!res.ok) throw new Error('Failed to fetch campaigns');
+      campaigns = await res.json();
+    } catch (err) {
+      console.error('Error fetching campaigns:', err);
+    }
+  }
+
+  // ✅ Keep local `selectedCampaignId` in sync with global store
+  $effect(() => {
+    const c = $currentCampaign; // auto-subscription in runes
+    if (c) {
+      selectedCampaignId = c.id; // update dropdown when +page sets currentCampaign
+    }
+  });
+
+  // ✅ Update global store when user changes dropdown
+  $effect(() => {
+    const c = campaigns.find(c => c.id === selectedCampaignId);
+    if (c) currentCampaign.set(c);
+  });
+
   const isActive = (path: string) => $page.url.pathname === path;
 
-  // Static titles for known routes
   const staticTitles: Record<string, string> = {
     '/app': 'Home',
     '/app/campaigns': 'Campaigns',
     '/app/campaigns/create': 'Create New Campaign',
-    '/app/create-org': 'Create Organization',
     '/app/leads': 'Leads',
     '/app/outreach': 'Outreach',
     '/app/analytics': 'Analytics',
@@ -25,20 +54,25 @@
     '/app/profile': 'Profile'
   };
 
-  // Derived store to generate page title, including dynamic campaign pages
-  const currentTitle = derived([page, currentCampaign], ([$page, $currentCampaign]) => {
-  const path = $page.url.pathname;
+  const currentTitle = derived(
+    [page, currentCampaign],
+    ([$page, $currentCampaign]) => {
+      const path = $page.url.pathname;
+      if (staticTitles[path]) {
+        if (path === '/app/leads' && $currentCampaign) {
+          return `Leads - ${$currentCampaign.name}`;
+        }
+        return staticTitles[path];
+      }
+      const match = path.match(/^\/app\/campaigns\/([^\/]+)$/);
+      if (match) {
+        return $currentCampaign ? $currentCampaign.name : `Campaign ${match[1]}`;
+      }
+      return 'Dashboard';
+    }
+  );
 
-  if (staticTitles[path]) return staticTitles[path];
-
-  // Dynamic campaign page: /app/campaigns/:id
-  const campaignMatch = path.match(/^\/app\/campaigns\/([^\/]+)$/);
-  if (campaignMatch) {
-    return $currentCampaign ? $currentCampaign.name : `Campaign ${campaignMatch[1]}`;
-  }
-
-  return 'Dashboard';
-});
+  onMount(fetchCampaigns);
 </script>
 
 <svelte:head>
@@ -75,7 +109,20 @@
   <div class="flex-1 flex flex-col ml-64">
     <!-- Top bar -->
     <header class="h-16 bg-white/60 backdrop-blur-md shadow flex items-center justify-between px-6 fixed top-0 left-64 right-0 z-20">
-      <h1 class="text-lg font-semibold jura">{$currentTitle}</h1>
+      <h1 class="text-lg font-semibold jura">Leads</h1>
+
+      <!-- Campaign Dropdown -->
+      <div class="ml-auto flex items-center space-x-2">
+        <p class="text-gray-700 text-sm font-medium">Campaign:</p>
+        <select
+          bind:value={selectedCampaignId}
+          class="border rounded px-2 py-1 w-58"
+        >
+          {#each campaigns as c}
+            <option value={c.id}>{c.name}</option>
+          {/each}
+        </select>
+      </div>
     </header>
 
     <!-- Page Content -->
