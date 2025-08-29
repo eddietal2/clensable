@@ -1,14 +1,26 @@
 <script lang="ts">
-  import { greenGradient, blueGradient, buttonBase } from '$lib/styles';
+  import { greenGradient, yellowGradient, buttonBase } from '$lib/styles';
   let hasCampaigns = false;
 </script>
 
 {#if !hasCampaigns}
   <div class="empty-state">
     <!-- Icon -->
-    <svg xmlns="http://www.w3.org/2000/svg" height="100" fill="none" viewBox="0 0 24 24" stroke="#00CF68">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-        d="M9 12h6m-6 4h6m2 4H7a2 2 0 01-2-2V6a2 2 0 012-2h3l2-2 2 2h3a2 2 0 012 2v12a2 2 0 01-2 2z"/>
+    <svg xmlns="http://www.w3.org/2000/svg" height="100" viewBox="0 0 24 24">
+      <defs>
+        <linearGradient id="yellowGradient" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#FACC15" />
+          <stop offset="100%" stop-color="#B59F00" />
+        </linearGradient>
+      </defs>
+      <path 
+        stroke="url(#yellowGradient)"
+        stroke-linecap="round" 
+        stroke-linejoin="round" 
+        stroke-width="2" 
+        fill="none"
+        d="M9 12h6m-6 4h6m2 4H7a2 2 0 01-2-2V6a2 2 0 012-2h3l2-2 2 2h3a2 2 0 012 2v12a2 2 0 01-2 2z"
+      />
     </svg>
 
     <h1 class="jura">No Campaigns Yet</h1>
