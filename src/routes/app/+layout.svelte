@@ -3,12 +3,15 @@
   import { derived } from 'svelte/store';
   import { User } from 'lucide-svelte';
   import Toast from '$lib/components/Toast.svelte';
+  import { currentCampaign } from '$lib/stores/campaign';
+
   let { children } = $props();
 
-  // Function to check if link is active
+  // Function to check if a link is active
   const isActive = (path: string) => $page.url.pathname === path;
 
-  const pageTitles: Record<string, string> = {
+  // Static titles for known routes
+  const staticTitles: Record<string, string> = {
     '/app': 'Home',
     '/app/campaigns': 'Campaigns',
     '/app/campaigns/create': 'Create New Campaign',
@@ -22,10 +25,21 @@
     '/app/profile': 'Profile'
   };
 
-  // Use derived store instead of $:
-  const currentTitle = derived(page, ($page) => pageTitles[$page.url.pathname] || 'Dashboard');
-</script>
+  // Derived store to generate page title, including dynamic campaign pages
+  const currentTitle = derived([page, currentCampaign], ([$page, $currentCampaign]) => {
+  const path = $page.url.pathname;
 
+  if (staticTitles[path]) return staticTitles[path];
+
+  // Dynamic campaign page: /app/campaigns/:id
+  const campaignMatch = path.match(/^\/app\/campaigns\/([^\/]+)$/);
+  if (campaignMatch) {
+    return $currentCampaign ? $currentCampaign.name : `Campaign ${campaignMatch[1]}`;
+  }
+
+  return 'Dashboard';
+});
+</script>
 
 <svelte:head>
   <title>Clensable Dashboard</title>
@@ -35,7 +49,7 @@
   <!-- Sidebar -->
   <aside class="w-64 fixed top-0 left-0 h-screen bg-gradient-to-b from-[#00CF68] to-[#187967] text-white flex flex-col">
     <div class="p-6 font-bold text-xl border-b border-white/20">
-      <img src="/logos/Complete_Logo_White.png" class="h-6" alt="" />
+      <img src="/logos/Complete_Logo_White.png" class="h-6" alt="Logo" />
     </div>
 
     <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
@@ -72,4 +86,3 @@
 </div>
 
 <Toast />
-

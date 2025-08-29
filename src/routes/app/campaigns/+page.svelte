@@ -140,13 +140,21 @@
             <td class="px-4 py-2">{campaign.emailsReplied}</td>
             <td class="px-4 py-2">{campaign.status}</td>
             <td class="px-4 py-2 flex space-x-2">
+              <!-- View Campaign -->
               <a 
                 href={`/app/campaigns/${campaign.id}`}
                 class="text-xs text-green-600 hover:underline"
               >
                 View
               </a>
-              <button class="text-xs text-yellow-600 hover:underline">Edit</button>
+              <!-- Edit -->
+              <a 
+                href={`/app/campaigns/${campaign.id}/edit`}
+                class="text-xs text-yellow-600 hover:underline"
+              >
+                Edit
+              </a>
+              <!-- Delete -->
               <button 
                 class="text-xs text-red-600 hover:underline flex items-center"
                 on:click={() => openConfirm(campaign.id)}
