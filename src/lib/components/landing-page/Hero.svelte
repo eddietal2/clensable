@@ -42,7 +42,7 @@
                 <!-- Main headline -->
                 <h1 class="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight hero-fade-in" style="animation-delay: 0.2s;">
                     Turn Local Businesses Into
-                    <span class="bg-gradient-to-r from-yellow-500 via-yellow-300 to-yellow-900 bg-clip-text text-transparent block mt-2">
+                    <span class="bg-gradient-to-b from-yellow-500 via-yellow-300 to-yellow-900 bg-clip-text text-transparent block mt-2">
                         Cleaning Clients
                     </span>
                 </h1>
@@ -55,14 +55,14 @@
                 
                 <!-- CTA Buttons -->
                 <div class="flex flex-col sm:flex-row gap-4 justify-center mb-12 hero-fade-in" style="animation-delay: 0.8s;">
-                    <button id="primaryCTA" class="group relative px-8 py-4 bg-gradient-to-r from-yellow-700 via-yellow-700 to-yellow-800 text-white font-semibold rounded-xl shadow-2xl hover:shadow-cyan-500/25 transform hover:scale-105 transition-all duration-300">
+                    <button id="primaryCTA" class="group relative px-8 py-4 bg-gradient-to-b from-yellow-700 via-yellow-700 to-yellow-800 text-white font-semibold rounded-xl shadow-2xl hover:shadow-cyan-500/25 transform hover:scale-105 transition-all duration-300">
                         <span class="relative z-10 flex items-center justify-center">
                             Start Finding Clients Today
                             <svg class="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                             </svg>
                         </span>
-                        <div class="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-400 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        <div class="absolute inset-0 bg-gradient-to-b from-cyan-400 to-blue-400 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     </button>
                     
                     <button id="secondaryCTA" class="px-8 py-4 bg-white/10 backdrop-blur-sm text-white font-semibold rounded-xl border border-white/20 hover:bg-white/20 transition-all duration-300">

@@ -45,7 +45,7 @@
     <div class="relative z-10">
             <!-- Features preview cards -->
             <div class="text-center mb-20">
-                <h1 class="text-4xl md:text-5xl font-bold bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-800 bg-clip-text text-transparent mb-4">Features</h1>
+                <h1 class="text-4xl md:text-5xl font-bold bg-gradient-to-b from-yellow-400 via-yellow-500 to-yellow-400 bg-clip-text text-transparent mb-4">Features</h1>
                 <p class="text-lg max-w-2xl mx-auto text-black md:text-white">
                     Powerful tools designed to grow your cleaning business
                 </p>
@@ -89,7 +89,7 @@
             <!-- Integrations -->
             <section class="py-12">
                 <div class="max-w-6xl mx-auto px-6 text-center">
-                    <h2 class="text-3xl font-bold mb-8 bg-gradient-to-r from-yellow-500 via-yellow-300 to-yellow-900 bg-clip-text text-transparent">Powered by Industry Leaders</h2>
+                    <h2 class="text-3xl font-bold mb-8 bg-gradient-to-b from-yellow-400 via-yellow-500 to-yellow-400 bg-clip-text text-transparent">Powered by Industry Leaders</h2>
                     <p class="text-lg max-w-2xl mx-auto my-4 text-black md:text-white">
                         Just some of the integrations we use in our software.
                     </p>

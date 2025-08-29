@@ -96,7 +96,7 @@
   <div class="flex justify-between items-center">
     <a href="/app/campaigns/create">
       <button 
-        class="bg-gradient-to-r from-[#00CF68] to-[#187967] 
+        class="bg-gradient-to-b from-[#00CF68] to-[#187967] 
                text-white px-4 py-2 rounded-lg font-semibold 
                hover:from-[#00b55c] hover:to-[#145c55] 
                transition flex items-center space-x-2">

@@ -44,7 +44,7 @@
 
     {#if !loginSuccess}
       <!-- Login Form -->
-      <h2 class="bg-gradient-to-r from-yellow-500 via-yellow-600 to-yellow-700 bg-clip-text text-transparent text-2xl font-bold mb-6 text-center">
+      <h2 class="bg-gradient-to-b from-yellow-500 via-yellow-600 to-yellow-700 bg-clip-text text-transparent text-2xl font-bold mb-6 text-center">
         Log in to Your Account
       </h2>
 
@@ -63,7 +63,7 @@
 
         <button
           type="submit"
-          class="w-full py-3 px-4 bg-gradient-to-r from-[#00CF68] to-[#187967] text-white font-semibold rounded-lg shadow-md hover:from-[#00b85c] hover:to-[#0f6f5a] transition"
+          class="w-full py-3 px-4 bg-gradient-to-b from-[#00CF68] to-[#187967] text-white font-semibold rounded-lg shadow-md hover:from-[#00b85c] hover:to-[#0f6f5a] transition"
           disabled={showSpinner}
         >
           Send Magic Link
@@ -141,7 +141,7 @@
 	      	c-9.656,0-17.604,7.178-17.604,16.066v-4.273C44.696,7.178,52.645,0,62.301,0h387.911C459.953,0,467.816,7.178,467.816,16.066z"/>
           </g>
         </svg>
-        <h2 class="bg-gradient-to-r from-yellow-500 via-yellow-600 to-yellow-700 bg-clip-text text-transparent mb-4 text-2xl font-bold">Magic Link Sent!</h2>
+        <h2 class="bg-gradient-to-b from-yellow-500 via-yellow-600 to-yellow-700 bg-clip-text text-transparent mb-4 text-2xl font-bold">Magic Link Sent!</h2>
         <p class="text-gray-700 mb-6">Check your email for the magic link to log in.</p>
       </div>
     {/if}

@@ -45,7 +45,7 @@
 
     {#if !signupSuccess}
       <!-- Sign Up Form -->
-      <h2 class="bg-gradient-to-r from-yellow-500 via-yellow-600 to-yellow-700 bg-clip-text text-transparent text-2xl font-bold mb-6 text-center">
+      <h2 class="bg-gradient-to-b from-yellow-500 via-yellow-600 to-yellow-700 bg-clip-text text-transparent text-2xl font-bold mb-6 text-center">
         Create Your Account
       </h2>
 
@@ -89,7 +89,7 @@
         <!-- Submit Button -->
         <button
           type="submit"
-          class="w-full py-3 px-4 bg-gradient-to-r from-[#00CF68] to-[#187967] text-white font-semibold rounded-lg shadow-md hover:from-[#00b85c] hover:to-[#0f6f5a] transition"
+          class="w-full py-3 px-4 bg-gradient-to-b from-[#00CF68] to-[#187967] text-white font-semibold rounded-lg shadow-md hover:from-[#00b85c] hover:to-[#0f6f5a] transition"
           disabled={showSpinner}
         >
           Send Magic Link
@@ -119,7 +119,7 @@
           <path d="M24 4L29.2533 7.83204L35.7557 7.81966L37.7533 14.0077L43.0211 17.8197L41 24L43.0211 30.1803L37.7533 33.9923L35.7557 40.1803L29.2533 40.168L24 44L18.7467 40.168L12.2443 40.1803L10.2467 33.9923L4.97887 30.1803L7 24L4.97887 17.8197L10.2467 14.0077L12.2443 7.81966L18.7467 7.83204L24 4Z" fill="#A2CC86" stroke="#53A654" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
           <path d="M17 24L22 29L32 19" stroke="#F0BA7D" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
-        <h2 class="bg-gradient-to-r from-yellow-500 via-yellow-600 to-yellow-700 bg-clip-text text-transparent mb-4 text-2xl font-bold">Sign Up Successful!</h2>
+        <h2 class="bg-gradient-to-b from-yellow-500 via-yellow-600 to-yellow-700 bg-clip-text text-transparent mb-4 text-2xl font-bold">Sign Up Successful!</h2>
         <p class="text-gray-700 mb-6">You can now login in. An email has been sent to <span class="font-bold text-green-700">{email}</span> with a link for you to log in.</p>
       </div>
     {/if}

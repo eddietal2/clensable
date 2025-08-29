@@ -66,7 +66,7 @@
 
 <main>
   {#if !success}
-    <div class="bg-gradient-to-r from-[#CFFFE030] to-[#B2F1D670] p-4 mt-14 max-w-2xl rounded-lg border-l-4 border-green-500">
+    <div class="bg-gradient-to-b from-[#CFFFE030] to-[#B2F1D670] p-4 mt-14 max-w-2xl rounded-lg border-l-4 border-green-500">
       <h2 class="text-lg font-semibold mb-2">What is a Campaign?</h2>
       <p class="text-gray-700">
         A campaign is a targeted outreach effort to potential clients for your cleaning services. 
@@ -84,7 +84,7 @@
         Your campaign <strong>{campaignName}</strong> has been created.
       </p>
       <button 
-        class="bg-gradient-to-r from-[#00CF68] to-[#187967] 
+        class="bg-gradient-to-b from-[#00CF68] to-[#187967] 
                text-white px-6 py-3 rounded-lg font-semibold 
                hover:from-[#00b55c] hover:to-[#145c55] transition"
         on:click={goToCampaigns}
@@ -185,7 +185,7 @@
       <!-- Submit Button -->
       <button
         type="submit"
-        class="bg-gradient-to-r from-[#00CF68] to-[#187967] text-white px-4 py-2 rounded-lg font-semibold 
+        class="bg-gradient-to-b from-[#00CF68] to-[#187967] text-white px-4 py-2 rounded-lg font-semibold 
                hover:from-[#00b55c] hover:to-[#145c55] transition flex items-center justify-center"
         disabled={showSpinner}
       >

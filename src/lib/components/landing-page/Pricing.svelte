@@ -42,7 +42,7 @@
                 
                 <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
                     One Price.
-                    <span class="bg-gradient-to-r from-[#00CF68] to-[#187967] bg-clip-text text-transparent">
+                    <span class="bg-gradient-to-b from-[#00CF68] to-[#187967] bg-clip-text text-transparent">
                         Everything Included.
                     </span>
                 </h2>
@@ -58,7 +58,7 @@
                 <div class="price-card bg-white rounded-3xl p-8 border-2 border-blue-200 shadow-xl relative  fade-in-up delay-200">
                     <!-- Popular Badge -->
                     <div class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                        <div class="bg-gradient-to-r from-yellow-700 via-yellow-700 to-yellow-800 text-white px-6 py-2 rounded-full text-sm font-semibold pulse-glow">
+                        <div class="bg-gradient-to-b from-yellow-700 via-yellow-700 to-yellow-800 text-white px-6 py-2 rounded-full text-sm font-semibold pulse-glow">
                             Free Trail
                         </div>
                     </div>
@@ -118,9 +118,11 @@
                     </div>
                     
                     <!-- CTA Button -->
-                    <button id="pricingCTA" class="w-full bg-gradient-to-r from-[#00CF68] to-[#187967] text-white font-semibold py-4 rounded-xl hover:shadow-lg transform hover:scale-105 transition-all duration-300 mb-4">
+                    <a href="/sign-up">
+                        <button id="pricingCTA" class="w-full bg-gradient-to-b from-[#00CF68] to-[#187967] text-white font-semibold py-4 rounded-xl hover:shadow-lg transform hover:scale-105 transition-all duration-300 mb-4">
                         Get Started Today
                     </button>
+                    </a>
                 </div>
             </div>
             

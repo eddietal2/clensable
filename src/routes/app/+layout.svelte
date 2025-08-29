@@ -52,7 +52,7 @@
       <img src="/logos/Complete_Logo_White.png" class="h-6" alt="Logo" />
     </div>
 
-    <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
+    <nav class="flex-1 p-4 space-y-2 overflow-y-auto jura">
       <a href="/app" class="block py-2 px-3 rounded-lg hover:bg-white/10 {isActive('/app') ? 'bg-white/30 font-semibold' : ''}">Home</a>
       <a href="/app/campaigns" class="block py-2 px-3 rounded-lg hover:bg-white/10 {isActive('/app/campaigns') ? 'bg-white/30 font-semibold' : ''}">Campaigns</a>
       <a href="/app/leads" class="block py-2 px-3 rounded-lg hover:bg-white/10 {isActive('/app/leads') ? 'bg-white/30 font-semibold' : ''}">Leads</a>
@@ -64,7 +64,7 @@
     </nav>
 
     <div class="p-4 border-t border-white/20">
-      <a href="/app/profile" class="flex items-center space-x-2 hover:text-yellow-300">
+      <a href="/app/profile" class="flex items-center space-x-2 hover:text-yellow-300 jura">
         <User class="h-4 w-4" />
         <span>Profile</span>
       </a>
@@ -74,8 +74,8 @@
   <!-- Main content -->
   <div class="flex-1 flex flex-col ml-64">
     <!-- Top bar -->
-    <header class="h-16 bg-white shadow flex items-center justify-between px-6 fixed top-0 left-64 right-0 z-20">
-      <h1 class="text-lg font-semibold">{$currentTitle}</h1>
+    <header class="h-16 bg-white/60 backdrop-blur-md shadow flex items-center justify-between px-6 fixed top-0 left-64 right-0 z-20">
+      <h1 class="text-lg font-semibold jura">{$currentTitle}</h1>
     </header>
 
     <!-- Page Content -->

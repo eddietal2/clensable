@@ -98,7 +98,7 @@
 </script>
 
 <main>
-  <h1 class="bg-gradient-to-r from-yellow-500 via-yellow-600 to-yellow-700 bg-clip-text text-transparent text-2xl font-bold mb-6">
+  <h1 class="bg-gradient-to-b from-yellow-500 via-yellow-600 to-yellow-700 bg-clip-text text-transparent text-2xl font-bold mb-6">
     Create Your Organization
   </h1>
 
