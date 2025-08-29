@@ -142,7 +142,7 @@
     </div>
 
     <!-- Description & Metadata -->
-    <div class="bg-gray-50 p-4 rounded-lg space-y-2">
+    <div class="bg-white p-4 rounded-lg space-y-2">
         <h1 class="text-2xl font-bold">
             {campaign.name}
         </h1>
