@@ -26,8 +26,15 @@
   let showConfirm = false;
   const campaignId = $page.params.id;
 
-  // Fetch campaign on mount
-  onMount(fetchCampaign);
+  function goBack() {
+    // If there's history, go back; otherwise, fallback to a default page
+    if (history.length > 1) {
+      history.back();
+    } else {
+      // fallback URL if no previous page in history
+      window.location.href = "/app/dashboard";
+    }
+  }
 
   async function fetchCampaign() {
     loading = true;
@@ -94,19 +101,24 @@
   function cancelSave() {
     showConfirm = false;
   }
+
+  
+  // Fetch campaign on mount
+  onMount(fetchCampaign);
+
 </script>
 
 <div class="max-w-4xl mx-auto p-6 space-y-6 mt-10">
-  <a 
-    href="/app/campaigns"
-    class={`${backButton}`}
-  >
-    <!-- Optional left arrow icon -->
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-    </svg>
-    Back
-  </a>
+  <button 
+      on:click={goBack}
+      class={`${backButton}`}
+    >
+      <!-- Optional left arrow icon -->
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+      </svg>
+      Back
+  </button>
 
   {#if loading}
     <p>Loading campaign...</p>

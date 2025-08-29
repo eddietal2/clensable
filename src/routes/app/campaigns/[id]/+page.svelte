@@ -98,6 +98,16 @@
     }
   }
 
+  function goBack() {
+    // If there's history, go back; otherwise, fallback to a default page
+    if (history.length > 1) {
+      history.back();
+    } else {
+      // fallback URL if no previous page in history
+      window.location.href = "/app/dashboard";
+    }
+  }
+
   onMount(() => fetchCampaign());
   onDestroy(() => { currentCampaign.set(null) });
 </script>
@@ -115,8 +125,8 @@
   {:else if campaign}
     <!-- Header -->
     <div class="flex justify-between items-center">
-      <a 
-          href="/app/campaigns"
+      <button 
+          on:click={goBack}
           class={`${backButton}`}
         >
           <!-- Optional left arrow icon -->
@@ -124,7 +134,7 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
           </svg>
           Back
-      </a>
+      </button>
       <div class="flex space-x-2">
           <a 
             href={`/app/campaigns/${campaign.id}/edit`}

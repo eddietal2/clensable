@@ -63,21 +63,31 @@
   function goToCampaigns() {
     goto("/app/campaigns");
   }
+
+  function goBack() {
+    // If there's history, go back; otherwise, fallback to a default page
+    if (history.length > 1) {
+      history.back();
+    } else {
+      // fallback URL if no previous page in history
+      window.location.href = "/app/dashboard";
+    }
+  }
 </script>
 
 <main>
   {#if !success}
   <div class="mt-14"></div>
-    <a 
-      href="/app/campaigns"
-      class={`${backButton}`}
-    >
-      <!-- Optional left arrow icon -->
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-      </svg>
-      Back
-    </a>
+    <button 
+          on:click={goBack}
+          class={`${backButton}`}
+        >
+          <!-- Optional left arrow icon -->
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+          </svg>
+          Back
+    </button>
     <div class="mt-2 bg-gradient-to-b from-[#FACC1510] to-[#B59F0030] p-4 max-w-2xl rounded-lg border-l-4 border-yellow-500">
       <h2 class="text-2xl font-bold mb-2 jura">What is a Campaign?</h2>
       <p class="text-gray-700">
@@ -96,7 +106,7 @@
         Your campaign <strong>{campaignName}</strong> has been created.
       </p>
       <button 
-        class={`${greenGradient} ${buttonBase}`}
+        class={`${greenGradient} ${buttonBase} block mx-auto`}
         on:click={goToCampaigns}
       >
         Go to Campaigns
