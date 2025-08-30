@@ -10,3 +10,7 @@ export const backButton = "inline-flex items-center px-4 py-1 bg-gray-100 text-g
 // Text
 export const goldText = "font-bold jura text-2xl bg-gradient-to-b from-yellow-500 via-yellow-600 to-yellow-500 bg-clip-text text-transparent";
 export const greenText = "font-bold jura text-2xl bg-gradient-to-b from-[#00CF68] to-[#187967] bg-clip-text text-transparent";
+
+// Input Fields
+export const inputField = "text-xs border border-gray-300 focus:outline-none focus:ring-1 focus:ring-[#187967] outline-none transition-colors duration-200 rounded w-full";
+export const selectField = "text-xs border border-gray-300 focus:outline-none focus:ring-1 focus:ring-[#187967] outline-none transition-colors duration-200 rounded w-full";

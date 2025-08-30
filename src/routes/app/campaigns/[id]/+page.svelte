@@ -8,7 +8,7 @@
   import { FileText, Mail, User, CheckCircle } from 'lucide-svelte';
   import { currentCampaign } from '$lib/stores/campaign';
   import { onDestroy } from 'svelte';
-  import { redGradient, backButton, buttonBase, yellowGradient } from '$lib/styles';
+  import { redGradient, backButton, buttonBase, greenGradient, goldText } from '$lib/styles';
 
   interface Lead {
     id: string;
@@ -138,12 +138,12 @@
       <div class="flex space-x-2">
           <a 
             href={`/app/campaigns/${campaign.id}/edit`}
-            class={`${yellowGradient} ${buttonBase} text-xs`}
+            class={`${greenGradient} ${buttonBase} text-xs w-24`}
           >
             Edit
           </a>
           <button
-            class={`${redGradient} ${buttonBase} text-xs`}
+            class={`${redGradient} ${buttonBase} text-xs w-24`}
             on:click={openConfirm}
             disabled={deletingId === campaign.id}
           >
@@ -154,10 +154,6 @@
 
     <!-- Description & Metadata -->
     <div class="bg-white p-4 rounded-lg space-y-2">
-        <h1 class="text-2xl font-bold">
-            {campaign.name}
-        </h1>
-        <p class="text-gray-700">{campaign.description || 'No description provided.'}</p>
         <div class="flex flex-wrap text-sm text-gray-500 space-x-4">
           <span>Category: <strong>{campaign.category}</strong></span>
           <span>Target ZIP: <strong>{campaign.targetZip}</strong></span>
@@ -165,6 +161,10 @@
           <span>Status: <strong>{campaign.status}</strong></span>
           <span>Created: <strong>{campaign.createdAt}</strong></span>
         </div>
+        <h1 class={`${goldText} text-3xl`}>
+            {campaign.name}
+        </h1>
+        <p class="text-gray-700">{campaign.description || 'No description provided.'}</p>
     </div>
 
     <!-- Stats Cards -->

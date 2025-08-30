@@ -6,7 +6,7 @@
   import { currentCampaign, type CampaignStore } from '$lib/stores/campaign';
   import { onMount } from 'svelte';
   import { searchTerm } from '$lib/search-term';
-  import { greenText } from '$lib/styles';
+  import { greenText, inputField, selectField } from '$lib/styles';
   
 
   let { children } = $props();
@@ -56,7 +56,7 @@
       const path = $page.url.pathname;
       if (staticTitles[path]) return staticTitles[path];
       const match = path.match(/^\/app\/campaigns\/([^\/]+)$/);
-      if (match) return $currentCampaign ? $currentCampaign.name : `Campaign ${match[1]}`;
+      if (match) return `Campaign Info`;
       return 'Dashboard';
     }
   );
@@ -118,7 +118,7 @@
   <!-- Main content -->
   <div class={`flex-1 flex flex-col transition-all duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-16'}`}>
     <!-- Top bar -->
-    <header class={`h-15 bg-white/60 backdrop-blur-md shadow flex items-center justify-between px-6 fixed top-0 transition-all duration-300 ${isSidebarOpen ? 'left-64' : 'left-16'} right-0 z-20`}>
+    <header class={`h-15 bg-[#00CF6805] backdrop-blur-md shadow flex items-center justify-between px-6 fixed top-0 transition-all duration-300 ${isSidebarOpen ? 'left-64' : 'left-16'} right-0 z-20`}>
       <h1 class="text-xl font-semibold jura">
         {$currentTitle}
         {#if $currentCampaign && $page.url.pathname === '/app/leads'}
@@ -131,14 +131,16 @@
       <!-- Campaign + Search -->
       {#if $page.url.pathname === '/app/leads'}
       <div class="ml-auto flex items-center space-x-2">
-        <p class="text-gray-700 text-sm font-medium">Campaign:</p>
-        <select bind:value={selectedCampaignId} class="border rounded px-2 py-1 w-64">
+        <p class={`${greenText} text-sm font-medium`}>Campaign:</p>
+        <select bind:value={selectedCampaignId} class={`${selectField}`}>
           <option value="" disabled selected>Select Campaign</option>
           {#each campaigns as c}
             <option value={c.id}>{c.name}</option>
           {/each}
         </select>
-        <input type="text" class="border rounded px-2 py-1 w-64" placeholder="Search Leads..." bind:value={$searchTerm} />
+        <input type="text" class={`${inputField}`} placeholder="Search Leads..." bind:value={$searchTerm} />
+        <span class="text-[0.6em] italic text-gray-600/50 w-1/2">Max 60 Leads per Campaign</span>
+
       </div>
       {/if}
     </header>
