@@ -26,7 +26,7 @@ export const POST: RequestHandler = async ({ request }) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Goog-Api-Key': "AIzaSyCDEoaTbC9sIFtuk_YHHRHMUwYICS5bGe4",
+          'X-Goog-Api-Key': `${process.env.GOOGLE_PLACES_API_KEY}`,
           'X-Goog-FieldMask': 'places.displayName,places.formattedAddress,places.location,places.photos,places.websiteUri,nextPageToken'
       },
       body: JSON.stringify(body)
@@ -74,7 +74,7 @@ async function main() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Goog-Api-Key': "AIzaSyCDEoaTbC9sIFtuk_YHHRHMUwYICS5bGe4",
+          'X-Goog-Api-Key': "KEY",
           'X-Goog-FieldMask': 'places.displayName,places.formattedAddress,places.location,places.photos,places.websiteUri,nextPageToken'
       },
       body: JSON.stringify(body)
