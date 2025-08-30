@@ -106,7 +106,7 @@
   <div class="flex-1 flex flex-col ml-64">
     <!-- Top bar -->
     <header class="h-16 bg-white/60 backdrop-blur-md shadow flex items-center justify-between px-6 fixed top-0 left-64 right-0 z-20">
-      <h1 class="text-lg font-semibold jura">{$currentTitle}</h1>
+      <h1 class="text-2xl font-semibold jura">{$currentTitle}</h1>
 
       <!-- Campaign Dropdown -->
       <div class="ml-auto flex items-center space-x-2">

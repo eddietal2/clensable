@@ -138,12 +138,12 @@
       <div class="flex space-x-2">
           <a 
             href={`/app/campaigns/${campaign.id}/edit`}
-            class={`${yellowGradient} ${buttonBase}`}
+            class={`${yellowGradient} ${buttonBase} text-xs`}
           >
             Edit
           </a>
           <button
-            class={`${redGradient} ${buttonBase}`}
+            class={`${redGradient} ${buttonBase} text-xs`}
             on:click={openConfirm}
             disabled={deletingId === campaign.id}
           >

@@ -73,7 +73,7 @@
 
     const data = await res.json();
 
-    leads = data.places.map((p: any) => ({
+    leads = data.allPlaces.map((p: any) => ({
       name: p.displayName?.text ?? 'Unknown',
       address: p.formattedAddress ?? '',
       phone: p.nationalPhoneNumber,
@@ -84,7 +84,7 @@
       photoUrls: p.photoUrls,
       currentPhotoIndex: 0
     }));
-    console.log(leads);
+    console.log(data);
     
 
     updatePagination();
@@ -153,7 +153,7 @@
 
 <main class="flex flex-col gap-6">
   {#if !selectedCampaign}
-    <div class="flex flex-col gap-4 mt-20 max-w-4xl mx-auto text-center">
+    <div class="flex flex-col gap-4 mt-20 w-[800px] mx-auto text-center">
       <h1 class="text-2xl font-semibold">Select a Campaign</h1>
       {#if campaigns.length === 0}
         <p class="text-gray-600">You have no campaigns yet. Create one first.</p>
