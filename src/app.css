@@ -15,3 +15,20 @@ main {
 section {
   /* padding: 4rem 0; */
 }
+
+/* Pulse Animation */
+@keyframes pulse-gray-to-gold {
+  0% {
+    background-color: #e5e5e5; /* gray */
+  }
+  50% {
+    background-color: #f4fff2; /* light gold */
+  }
+  100% {
+    background-color: #e5e5e5; /* gray */
+  }
+}
+
+.animate-gray-to-gold {
+  animation: pulse-gray-to-gold 2s ease-in-out infinite;
+}

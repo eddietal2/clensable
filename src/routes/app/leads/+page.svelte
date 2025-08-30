@@ -180,8 +180,10 @@
       {/if}
     </div>
   {:else}
+   <!-- Top Left Info Header -->
     <div class="mt-20 w-full max-w-7xl mx-auto flex flex-col gap-6">
-      <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+      {#if !loading}
+        <div class="flex flex-col md:flex-row justify-between items-center gap-4">
         <h1 class="text-md bg-white p-3 rounded-lg shadow">
           <span class="font-bold">Campaign Leads ({leads.length})</span> - {selectedCampaign.name} @ {selectedCampaign.targetZip}
           <br>
@@ -224,7 +226,17 @@
             Next
           </button>
         </div>
-      </div>
+        </div>
+      {:else}
+        <div class="bg-gray-200 animate-pulse rounded-lg p-4 flex w-[300px]">
+          <div class="w-12 h-12 bg-gray-300 rounded-lg mr-6 flex-shrink-0"></div>
+          <div class="flex-1 space-y-4 min-w-0">
+            <div class="h-6 bg-gray-300 rounded w-3/4"></div>
+            <div class="h-6 bg-gray-300 rounded w-3/4"></div>
+          </div>
+        </div>
+
+      {/if}
 
       <!-- Leads List -->
       <div class="flex flex-col gap-4">
