@@ -6,6 +6,8 @@
   import { currentCampaign, type CampaignStore } from '$lib/stores/campaign';
   import { onMount } from 'svelte';
   import { searchTerm } from '$lib/search-term';
+  import { greenText } from '$lib/styles';
+  
 
   let { children } = $props();
 
@@ -121,7 +123,7 @@
         {$currentTitle}
         {#if $currentCampaign && $page.url.pathname === '/app/leads'}
           {#if $currentCampaign.leadCount !== undefined}
-            — {$currentCampaign.leadCount} Leads @ {$currentCampaign.targetZip}
+            — <span class={`${greenText}`}>{$currentCampaign.leadCount} @ {$currentCampaign.targetZip}</span>
           {/if}
         {/if}
       </h1>
