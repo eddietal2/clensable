@@ -1,20 +1,17 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import { derived } from 'svelte/store';
-  import { User } from 'lucide-svelte';
+  import { User, Menu, ChevronLeft, ChevronRight } from 'lucide-svelte';
   import Toast from '$lib/components/Toast.svelte';
   import { currentCampaign, type CampaignStore } from '$lib/stores/campaign';
   import { onMount } from 'svelte';
 
   let { children } = $props();
 
-  // ✅ campaigns is reactive
   let campaigns = $state<CampaignStore[]>([]);
-
-  // Selected campaign ID
   let selectedCampaignId = $state('');
+  let isSidebarOpen = $state(true); // ✅ collapsible state
 
-  // Fetch campaigns from API
   async function fetchCampaigns() {
     try {
       const res = await fetch('/api/campaigns');
@@ -25,15 +22,11 @@
     }
   }
 
-  // ✅ Keep local `selectedCampaignId` in sync with global store
   $effect(() => {
-    const c = $currentCampaign; // auto-subscription in runes
-    if (c) {
-      selectedCampaignId = c.id; // update dropdown when +page sets currentCampaign
-    }
+    const c = $currentCampaign;
+    if (c) selectedCampaignId = c.id;
   });
 
-  // ✅ Update global store when user changes dropdown
   $effect(() => {
     const c = campaigns.find(c => c.id === selectedCampaignId);
     if (c) currentCampaign.set(c);
@@ -58,9 +51,7 @@
     [page, currentCampaign],
     ([$page, $currentCampaign]) => {
       const path = $page.url.pathname;
-      if (staticTitles[path]) {
-        return staticTitles[path];
-      }
+      if (staticTitles[path]) return staticTitles[path];
       const match = path.match(/^\/app\/campaigns\/([^\/]+)$/);
       if (match) {
         return $currentCampaign ? $currentCampaign.name : `Campaign ${match[1]}`;
@@ -72,40 +63,72 @@
   onMount(fetchCampaigns);
 </script>
 
-<svelte:head>
-  <title>Clensable Dashboard</title>
-</svelte:head>
-
 <div class="min-h-screen flex bg-gray-100">
   <!-- Sidebar -->
-  <aside class="w-64 fixed top-0 left-0 h-screen bg-gradient-to-b from-[#fff] to-[#fff] text-white flex flex-col">
-    <div class="p-6 font-bold text-xl border-b border-white/20">
-      <img src="/logos/Complete_Logo_Green.png" class="h-6" alt="Logo" />
+  <aside
+    class={`${
+      isSidebarOpen ? 'w-64' : 'w-16'
+    } fixed top-0 left-0 h-screen bg-gradient-to-b from-[#fff] to-[#fff] text-black flex flex-col transition-all duration-300`}
+  >
+    <div class="p-4 flex items-center justify-between border-b border-gray-200">
+      {#if isSidebarOpen}
+        <img src="/logos/Complete_Logo_Green.png" class="h-6" alt="Logo" />
+      {/if}
+      <button
+        class="p-1 rounded hover:bg-gray-200"
+        on:click={() => (isSidebarOpen = !isSidebarOpen)}
+      >
+        {#if isSidebarOpen}
+          <ChevronLeft class="h-5 w-5" />
+        {:else}
+          <ChevronRight class="h-5 w-5" />
+        {/if}
+      </button>
     </div>
 
-    <nav class="flex-1 p-4 space-y-2 overflow-y-auto jura">
-      <a href="/app" class="block py-2 px-3 text-black rounded-lg hover:bg-green-200/10 {isActive('/app') ? 'bg-green-300/30 font-semibold' : ''}">Home</a>
-      <a href="/app/campaigns" class="block py-2 px-3 text-black rounded-lg hover:bg-green-200/10 {isActive('/app/campaigns') ? 'bg-green-300/30 font-semibold' : ''}">Campaigns</a>
-      <a href="/app/leads" class="block py-2 px-3 text-black rounded-lg hover:bg-green-200/10 {isActive('/app/leads') ? 'bg-green-300/30 font-semibold' : ''}">Leads</a>
-      <a href="/app/outreach" class="block py-2 px-3 text-black rounded-lg hover:bg-green-200/10 {isActive('/app/outreach') ? 'bg-green-300/30 font-semibold' : ''}">Outreach</a>
-      <a href="/app/analytics" class="block py-2 px-3 text-black rounded-lg hover:bg-green-200/10 {isActive('/app/analytics') ? 'bg-green-300/30 font-semibold' : ''}">Analytics</a>
-      <a href="/app/team" class="block py-2 px-3 text-black rounded-lg hover:bg-green-200/10 {isActive('/app/team') ? 'bg-green-300/30 font-semibold' : ''}">Team</a>
-      <a href="/app/settings" class="block py-2 px-3 text-black rounded-lg hover:bg-green-200/10 {isActive('/app/settings') ? 'bg-green-300/30 font-semibold' : ''}">Settings</a>
-      <a href="/app/help" class="block py-2 px-3 text-black rounded-lg hover:bg-green-200/10 {isActive('/app/help') ? 'bg-green-300/30 font-semibold' : ''}">Help</a>
+    <nav class="flex-1 p-2 space-y-1 overflow-y-auto jura">
+      <a href="/app" class="flex items-center gap-2 py-2 px-3 rounded-lg hover:bg-green-200/10 {isActive('/app') ? 'bg-green-300/30 font-semibold' : ''}">
+        <span class="truncate">{isSidebarOpen ? 'Home' : '🏠'}</span>
+      </a>
+      <a href="/app/campaigns" class="flex items-center gap-2 py-2 px-3 rounded-lg hover:bg-green-200/10 {isActive('/app/campaigns') ? 'bg-green-300/30 font-semibold' : ''}">
+        <span class="truncate">{isSidebarOpen ? 'Campaigns' : '📊'}</span>
+      </a>
+      <a href="/app/leads" class="flex items-center gap-2 py-2 px-3 rounded-lg hover:bg-green-200/10 {isActive('/app/leads') ? 'bg-green-300/30 font-semibold' : ''}">
+        <span class="truncate">{isSidebarOpen ? 'Leads' : '👥'}</span>
+      </a>
+      <a href="/app/outreach" class="flex items-center gap-2 py-2 px-3 rounded-lg hover:bg-green-200/10 {isActive('/app/outreach') ? 'bg-green-300/30 font-semibold' : ''}">
+        <span class="truncate">{isSidebarOpen ? 'Outreach' : '📨'}</span>
+      </a>
+      <a href="/app/analytics" class="flex items-center gap-2 py-2 px-3 rounded-lg hover:bg-green-200/10 {isActive('/app/analytics') ? 'bg-green-300/30 font-semibold' : ''}">
+        <span class="truncate">{isSidebarOpen ? 'Analytics' : '📈'}</span>
+      </a>
+      <a href="/app/team" class="flex items-center gap-2 py-2 px-3 rounded-lg hover:bg-green-200/10 {isActive('/app/team') ? 'bg-green-300/30 font-semibold' : ''}">
+        <span class="truncate">{isSidebarOpen ? 'Team' : '👨‍👩‍👧‍👦'}</span>
+      </a>
+      <a href="/app/settings" class="flex items-center gap-2 py-2 px-3 rounded-lg hover:bg-green-200/10 {isActive('/app/settings') ? 'bg-green-300/30 font-semibold' : ''}">
+        <span class="truncate">{isSidebarOpen ? 'Settings' : '⚙️'}</span>
+      </a>
+      <a href="/app/help" class="flex items-center gap-2 py-2 px-3 rounded-lg hover:bg-green-200/10 {isActive('/app/help') ? 'bg-green-300/30 font-semibold' : ''}">
+        <span class="truncate">{isSidebarOpen ? 'Help' : '❓'}</span>
+      </a>
     </nav>
 
-    <div class="p-4 border-t border-white/20">
-      <a href="/app/profile" class="flex items-center space-x-2 hover:text-yellow-300 jura">
+    <div class="p-4 border-t border-gray-200">
+      <a href="/app/profile" class="flex items-center gap-2 hover:text-green-600 jura">
         <User class="h-4 w-4" />
-        <span>Profile</span>
+        {#if isSidebarOpen}<span>Profile</span>{/if}
       </a>
     </div>
   </aside>
 
   <!-- Main content -->
-  <div class="flex-1 flex flex-col ml-64">
+  <div class={`flex-1 flex flex-col transition-all duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-16'}`}>
     <!-- Top bar -->
-    <header class="h-16 bg-white/60 backdrop-blur-md shadow flex items-center justify-between px-6 fixed top-0 left-64 right-0 z-20">
+    <header
+      class={`h-16 bg-white/60 backdrop-blur-md shadow flex items-center justify-between px-6 fixed top-0 transition-all duration-300 ${
+        isSidebarOpen ? 'left-64' : 'left-16'
+      } right-0 z-20`}
+    >
       <h1 class="text-2xl font-semibold jura">{$currentTitle}</h1>
 
       <!-- Campaign Dropdown -->
