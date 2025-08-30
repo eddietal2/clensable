@@ -66,7 +66,8 @@
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        textQuery: `${campaign.category} near ${campaign.targetZip} within ${campaign.radius} miles`
+        textQuery: `${campaign.category} near ${campaign.targetZip} within ${campaign.radius} miles`,
+        maxResults: 60
       })
     });
 
@@ -83,6 +84,8 @@
       photoUrls: p.photoUrls,
       currentPhotoIndex: 0
     }));
+    console.log(leads);
+    
 
     updatePagination();
     loading = false;
