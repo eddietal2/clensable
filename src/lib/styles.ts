@@ -5,3 +5,4 @@ export const redGradient = "bg-gradient-to-b from-[#F87171] to-[#B91C1C] hover:f
 export const grayGradient = "bg-gradient-to-b from-gray-300 to-gray-500 hover:from-[#EAB308] hover:to-[#92400E]";
 export const buttonBase = "text-white text-xs p-2 flex items-center justify-center space-x-2 rounded-lg font-semibold hover:opacity-90 transition";
 export const backButton = "inline-flex items-center px-4 py-1 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 hover:text-gray-900 transition font-medium"
+export const goldText = "font-bold jura text-2xl bg-gradient-to-b from-yellow-500 via-yellow-600 to-yellow-500 bg-clip-text text-transparent";

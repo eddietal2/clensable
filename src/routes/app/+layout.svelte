@@ -76,7 +76,7 @@
       {/if}
       <button
         class="p-1 rounded hover:bg-gray-200"
-        on:click={() => (isSidebarOpen = !isSidebarOpen)}
+        onclick={() => (isSidebarOpen = !isSidebarOpen)}
       >
         {#if isSidebarOpen}
           <ChevronLeft class="h-5 w-5" />

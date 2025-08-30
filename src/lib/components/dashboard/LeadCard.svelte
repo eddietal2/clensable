@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { greenGradient, buttonBase } from '$lib/styles';
+  import { greenGradient, buttonBase, goldText } from '$lib/styles';
   export let lead: any;
   export let moveToOutreach: (lead: any) => void;
 
@@ -56,7 +56,7 @@
     <!-- Lead info -->
     <div class="flex-1 flex flex-col justify-between min-w-0">
       <div>
-        <h2 class="jura font-semibold text-2xl truncate">{lead.name}</h2>
+        <h2 class={`${goldText}`}>{lead.name}</h2>
         <p class="text-gray-600 truncate">{lead.address}</p>
         {#if lead.websiteUri}
           <p class="text-blue-600 text-sm truncate">

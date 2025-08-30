@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
-  import { greenGradient, grayGradient, buttonBase } from '$lib/styles';
+  import { greenGradient, grayGradient, buttonBase, goldText } from '$lib/styles';
   import { currentCampaign } from '$lib/stores/campaign';
   import { get } from 'svelte/store';
   import LeadCard from '$lib/components/dashboard/LeadCard.svelte';
@@ -154,7 +154,7 @@
 <main class="flex flex-col gap-6">
   {#if !selectedCampaign}
     <div class="flex flex-col gap-4 mt-20 w-[800px] mx-auto text-center">
-      <h1 class="text-2xl font-semibold">Select a Campaign</h1>
+      <h1 class={`${goldText} font-bold text-3xl`}>Select a Campaign</h1>
       {#if campaigns.length === 0}
         <p class="text-gray-600">You have no campaigns yet. Create one first.</p>
         <a href="/app/campaigns/create" class={`${greenGradient} ${buttonBase} mt-4`}>Create Campaign</a>
