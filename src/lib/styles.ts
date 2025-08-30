@@ -12,5 +12,5 @@ export const goldText = "font-bold jura text-2xl bg-gradient-to-b from-yellow-50
 export const greenText = "font-bold jura text-2xl bg-gradient-to-b from-[#00CF68] to-[#187967] bg-clip-text text-transparent";
 
 // Input Fields
-export const inputField = "text-xs border border-gray-300 focus:outline-none focus:ring-1 focus:ring-[#187967] outline-none transition-colors duration-200 rounded w-full";
-export const selectField = "text-xs border border-gray-300 focus:outline-none focus:ring-1 focus:ring-[#187967] outline-none transition-colors duration-200 rounded w-full";
+export const inputField = "text-xs border-2 border-[#99999950] focus:border-2 focus:border-[#187967] focus:ring-1 focus:ring-[#187967] rounded w-full transition-colors duration-200";
+export const selectField = "text-xs border-2 border-[#99999950] focus:border-2 focus:border-[#187967] focus:ring-1 focus:ring-[#187967] outline-none transition-colors duration-200 rounded w-full";

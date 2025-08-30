@@ -5,6 +5,11 @@
   import { get } from 'svelte/store';
   import LeadCard from '$lib/components/dashboard/LeadCard.svelte';
   import { searchTerm } from '$lib/search-term';
+  import { X } from 'lucide-svelte';
+  import { fly } from 'svelte/transition';
+
+  // Show Info Card "What is a Lead?"
+  let showIntroCard = true;
 
   type Campaign = {
     id: string;
@@ -169,17 +174,36 @@
   onDestroy(() => unsubscribe());
 </script>
 
-
 <main class="flex flex-col gap-6">
+  {#if showIntroCard}
+  <div class="relative shadow mt-14 bg-gradient-to-b from-[#FACC1510] to-[#B59F0020] p-4 max-w-4xl rounded-lg border-l-4 border-yellow-500"
+       transition:fly={{ x: 20, duration: 150 }}>
+    <!-- Close button -->
+    <button 
+      class="absolute top-2 right-2 p-1 rounded hover:bg-yellow-100 transition"
+      on:click={() => (showIntroCard = false)}
+      aria-label="Close"
+    >
+      <X class="h-5 w-5 text-gray-600" />
+    </button>
+  
+    <h2 class="text-2xl font-bold mb-2 jura">What is a Lead?</h2>
+    <p class="text-gray-700">
+      A campaign is a targeted outreach effort to potential clients for your cleaning services. 
+      It allows you to define the market segment, geographic area, and messaging for your outreach. 
+      Each campaign will track leads, emails sent, replies, and overall effectiveness so you can focus 
+      on the most promising prospects.
+    </p>
+  </div>
+  {/if}
   {#if !selectedCampaign}
-    <!-- Campaign selection UI remains exactly as before -->
-    <div class="flex flex-col gap-4 mt-20 w-[800px] mx-auto text-center">
+    <div class="flex flex-col gap-4 w-4xl mx-auto text-center transition-200 {showIntroCard ? 'mt-4' : 'mt-14'}">
       <h1 class={`${goldText} font-bold text-3xl`}>Select a Campaign</h1>
       {#if campaigns.length === 0}
-        <p class="text-gray-600">You have no campaigns yet. Create one first.</p>
-        <a href="/app/campaigns/create" class={`${greenGradient} ${buttonBase} mt-4`}>Create Campaign</a>
+        <p class="text-gray-600">You have no campaigns yet. Create one first to enable searching for Leads.</p>
+        <a href="/app/campaigns/create" class={`${greenGradient} ${buttonBase} mt-4 w-30 mx-auto`}>Create Campaign</a>
       {:else}
-        <div class="flex flex-col gap-4 mt-4">
+        <div class="flex flex-col gap-4 mt-1">
           {#each campaigns as c}
             <button 
               class="bg-white rounded-lg shadow hover:shadow-lg p-4 cursor-pointer transition flex items-center justify-between"

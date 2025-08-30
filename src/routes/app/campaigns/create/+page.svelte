@@ -2,7 +2,7 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { CheckCircle } from "lucide-svelte";
-  import { greenGradient, backButton, buttonBase, grayGradient } from '$lib/styles';
+  import { greenGradient, backButton, buttonBase, grayGradient, inputField, selectField } from '$lib/styles';
 
   let name = "";
   let description = "";
@@ -88,15 +88,6 @@
           </svg>
           Back
     </button>
-    <div class="mt-2 bg-gradient-to-b from-[#FACC1510] to-[#B59F0030] p-4 max-w-2xl rounded-lg border-l-4 border-yellow-500">
-      <h2 class="text-2xl font-bold mb-2 jura">What is a Campaign?</h2>
-      <p class="text-gray-700">
-        A campaign is a targeted outreach effort to potential clients for your cleaning services. 
-        It allows you to define the market segment, geographic area, and messaging for your outreach. 
-        Each campaign will track leads, emails sent, replies, and overall effectiveness so you can focus 
-        on the most promising prospects.
-      </p>
-    </div>
   {:else}
     <!-- Success Message -->
     <div class="bg-green-50 border border-green-300 text-green-800 p-6 mt-14 rounded-lg text-center space-y-4">
@@ -126,32 +117,22 @@
     <form on:submit|preventDefault={handleSubmit} class="space-y-4">
       <!-- Campaign Name -->
       <div>
-        <label class="block font-semibold mb-1">Campaign Name</label>
+        <p class="jura block font-bold mb-1">Campaign Name</p>
         <input
           type="text"
           bind:value={name}
-          class="w-full border rounded px-3 py-2"
+          class={`${inputField}`}
           placeholder="Enter campaign name"
         />
       </div>
 
-      <!-- Description -->
-      <div>
-        <label class="block font-semibold mb-1">Description (optional)</label>
-        <textarea
-          bind:value={description}
-          class="w-full border rounded px-3 py-2"
-          placeholder="Enter a short description"
-        ></textarea>
-      </div>
-
       <!-- Target Zip -->
       <div>
-        <label class="block font-semibold mb-1">Target Zip Code</label>
+        <p class="jura block font-bold mb-1">Target Zip Code</p>
         <input
           type="text"
           bind:value={targetZip}
-          class="w-full border rounded px-3 py-2"
+          class={`${inputField}`}
           placeholder="e.g., 90210"
           maxlength="5"
         />
@@ -159,21 +140,28 @@
 
       <!-- Radius -->
       <div>
-        <label class="block font-semibold mb-1">Radius (miles)</label>
+        <p class="jura block font-bold mb-1">Radius (miles)</p>
         <input
           type="number"
           bind:value={radius}
-          class="w-full border rounded px-3 py-2"
+          min="1"
+          max="30"
+          class={`${inputField}`}
           placeholder="e.g., 10"
         />
+        
+        <p class="block text-xs mt-1 text-gray-600">
+          Maximum radius is 30 miles from Zip Code.
+        </p>
       </div>
+
 
       <!-- Category Dropdown -->
       <div>
-        <label class="block font-semibold mb-1">Category</label>
+        <p class="jura block font-bold mb-1">Category</p>
         <select
           bind:value={category}
-          class="w-full border rounded px-3 py-2 bg-white"
+          class={`${selectField}`}
         >
           <option value="" disabled selected>Select a category</option>
           <option value="Restaurants">Restaurants</option>
@@ -193,13 +181,23 @@
             type="text"
             bind:value={customCategory}
             placeholder="Enter custom category"
-            class="mt-2 w-full border rounded px-3 py-2"
+            class={`${inputField}`}
           />
         {/if}
 
-        <label class="block text-xs mt-1 text-gray-600">
+        <p class="block text-xs mt-1 text-gray-600">
           Select the primary market segment to target. Only one category can be chosen per campaign.
-        </label>
+        </p>
+      </div>
+
+      <!-- Description -->
+      <div>
+        <p class="jura block font-bold mb-1">Description (optional)</p>
+        <textarea
+          bind:value={description}
+          class={`${inputField}`}
+          placeholder="Enter a short description"
+        ></textarea>
       </div>
 
       <!-- Submit Button -->

@@ -3,7 +3,12 @@
   import { FileText } from 'lucide-svelte';
   import { addToast } from '$lib/stores/toast';
   import ConfirmModal from '$lib/components/ConfirmModal.svelte';
-  import { greenGradient, blueGradient, buttonBase } from '$lib/styles';
+  import { greenGradient, buttonBase } from '$lib/styles';
+  import { X } from 'lucide-svelte';
+  import { fly } from 'svelte/transition';
+
+  // Show Info Card "What is a Campaign?"
+  let showIntroCard = true;
 
   interface Campaign {
     id: string;
@@ -92,7 +97,7 @@
   onMount(() => fetchCampaigns());
 </script>
 
-<div class="space-y-6 p-6 mt-10">
+<div class="space-y-6 p-6 mt-10 max-w-4xl">
   <!-- Header / Quick Actions -->
   <div class="flex justify-between items-center">
     <a href="/app/campaigns/create">
@@ -103,9 +108,31 @@
       </button>
     </a>
   </div>
+  
+  {#if showIntroCard}
+  <div class="relative shadow mt-2 bg-gradient-to-b from-[#FACC1510] to-[#B59F0020] p-4 max-w-4xl rounded-lg border-l-4 border-yellow-500"
+       transition:fly={{ x: 20, duration: 150 }}>
+    <!-- Close button -->
+    <button 
+      class="absolute top-2 right-2 p-1 rounded hover:bg-yellow-100 transition"
+      on:click={() => (showIntroCard = false)}
+      aria-label="Close"
+    >
+      <X class="h-5 w-5 text-gray-600" />
+    </button>
+  
+    <h2 class="text-2xl font-bold mb-2 jura">What is a Campaign?</h2>
+    <p class="text-gray-700">
+      A campaign is a targeted outreach effort to potential clients for your cleaning services. 
+      It allows you to define the market segment, geographic area, and messaging for your outreach. 
+      Each campaign will track leads, emails sent, replies, and overall effectiveness so you can focus 
+      on the most promising prospects.
+    </p>
+  </div>
+  {/if}
 
   <!-- Campaigns Table -->
-  <section class="bg-white p-6 rounded-lg shadow">
+  <section class="bg-white p-6 rounded-lg shadow max-w-4xl">
     {#if loading}
       <div class="mt-6 flex justify-center">
         <svg class="animate-spin h-8 w-8 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -116,9 +143,9 @@
     {:else if errorMsg}
       <p class="text-red-600">{errorMsg}</p>
     {:else}
-      <table class="w-full text-left">
+      <table class="w-full text-left max-w-4xl">
         <thead>
-          <tr class="border-b border-gray-200">
+          <tr class="jura border-b border-gray-200">
             <th class="px-4 py-2">Name</th>
             <th class="px-4 py-2">Created At</th>
             <th class="px-4 py-2">Leads</th>
