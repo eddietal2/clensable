@@ -69,10 +69,11 @@
       <FileText class="w-5 h-5" />
       <span>Create Campaign</span>
     </a>
-    <button class={`${blueGradient} ${buttonBase}`}>
+    <a href="/app/leads"
+      class={`${blueGradient} ${buttonBase}`}>
       <User class="w-5 h-5" />
       <span>Add Leads</span>
-    </button>
+    </a>
   </section>
 
   <!-- Recent Activity -->

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { greenGradient, buttonBase } from '$lib/styles';
   export let lead: any;
   export let moveToOutreach: (lead: any) => void;
 
@@ -79,7 +80,7 @@
   <!-- Bottom toolbar -->
   <div class="border-t-2 border-[#99999920] p-4 flex justify-end">
     <button
-      class="bg-green-500 text-white text-xs px-5 py-2 rounded-md hover:shadow-md transition"
+      class={`${greenGradient} ${buttonBase}`}
       on:click={() => moveToOutreach(lead)}
     >
       Add to Outreach
