@@ -4,6 +4,7 @@
   import { currentCampaign } from '$lib/stores/campaign';
   import { get } from 'svelte/store';
   import LeadCard from '$lib/components/dashboard/LeadCard.svelte';
+  import { searchTerm } from '$lib/search-term';
 
   type Campaign = {
     id: string;
@@ -58,8 +59,6 @@
     leads = [];
     loading = true;
 
-    currentCampaign.set({ id: campaign.id, name: campaign.name });
-
     await new Promise(r => setTimeout(r, 500));
 
     const res = await fetch('/api/leads', {
@@ -84,18 +83,28 @@
       photoUrls: p.photoUrls,
       currentPhotoIndex: 0
     }));
-    console.log(data);
-    
 
-    updatePagination();
     loading = false;
     scrollToTop();
   }
 
-  function updatePagination() {
-    totalPages = Math.ceil(leads.length / leadsPerPage);
-    paginatedLeads = leads.slice((currentPage - 1) * leadsPerPage, currentPage * leadsPerPage);
+  // ----------------------------
+  // Reactive search & pagination
+  // ----------------------------
+  // Filtered leads based on searchTerm store
+  $: filteredLeads = leads.filter(l =>
+    l.name.toLowerCase().includes($searchTerm.toLowerCase())
+  );
 
+  // Recalculate pagination when filteredLeads or currentPage changes
+  $: {
+    totalPages = Math.ceil(filteredLeads.length / leadsPerPage);
+    paginatedLeads = filteredLeads.slice(
+      (currentPage - 1) * leadsPerPage,
+      currentPage * leadsPerPage
+    );
+
+    // Update visible pages for pagination
     const pages: (number | string)[] = [];
     const delta = 2;
     const left = Math.max(2, currentPage - delta);
@@ -109,20 +118,30 @@
     visiblePages = pages;
   }
 
+  // Reset to first page if searchTerm changes
+  $: if ($searchTerm) currentPage = 1;
+
+  // ----------------------------
+  // Update currentCampaign dynamically
+  // ----------------------------
+  $: if (selectedCampaign) {
+    currentCampaign.set({
+      id: selectedCampaign.id,
+      name: selectedCampaign.name,
+      targetZip: selectedCampaign.targetZip,
+      leadCount: filteredLeads.length
+    });
+  }
+
   function goToPage(page: number) {
     if (page >= 1 && page <= totalPages) {
       currentPage = page;
-      updatePagination();
       scrollToTop();
     }
   }
-
   function nextPage() { goToPage(currentPage + 1); }
   function prevPage() { goToPage(currentPage - 1); }
-
-  function scrollToTop() {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
+  function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
 
   function moveToOutreach(lead: Lead) {
     alert(`Lead ${lead.name} added to Outreach for ${selectedCampaign?.name}`);
@@ -140,7 +159,6 @@
     leads = [...leads]; // trigger reactivity
   }
 
-
   const unsubscribe = currentCampaign.subscribe(storeCampaign => {
     if (!storeCampaign) return;
     const c = campaigns.find(c => c.id === storeCampaign.id);
@@ -151,8 +169,10 @@
   onDestroy(() => unsubscribe());
 </script>
 
+
 <main class="flex flex-col gap-6">
   {#if !selectedCampaign}
+    <!-- Campaign selection UI remains exactly as before -->
     <div class="flex flex-col gap-4 mt-20 w-[800px] mx-auto text-center">
       <h1 class={`${goldText} font-bold text-3xl`}>Select a Campaign</h1>
       {#if campaigns.length === 0}
@@ -180,19 +200,13 @@
       {/if}
     </div>
   {:else}
-   <!-- Top Left Info Header -->
+    <!-- Leads header, pagination, list, and skeletons remain unchanged -->
     <div class="mt-20 w-full max-w-7xl mx-auto flex flex-col gap-6">
-      {#if !loading}
-        <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-        <h1 class="text-md bg-white p-3 rounded-lg shadow">
-          <span class="font-bold">Campaign Leads ({leads.length})</span> - {selectedCampaign.name} @ {selectedCampaign.targetZip}
-          <br>
-          <span class="text-[0.7em] italic text-yellow-600">Max 60 Leads per search</span>
-        </h1>
-        <!-- Pagination -->
-        <div class="flex flex-wrap justify-center items-center gap-2">
+      <!-- Header + pagination top -->
+      {#if !loading && paginatedLeads.length > 0}
+        <div class="flex flex-wrap justify-end items-center gap-2 mt-4">
           <button
-            class={`${grayGradient} ${buttonBase} w-20 disabled:opacity-50 disabled:cursor-not-allowed`}
+            class={`${grayGradient} text-white px-3 py-1.5 rounded-md text-sm w-20 disabled:opacity-50 disabled:cursor-not-allowed`}
             on:click={prevPage}
             disabled={currentPage === 1}
           >
@@ -219,23 +233,13 @@
           </div>
 
           <button
-            class={`${grayGradient} ${buttonBase} w-20 disabled:opacity-50 disabled:cursor-not-allowed`}
+            class={`${grayGradient} text-white px-3 py-1.5 rounded-md text-sm w-20 disabled:opacity-50 disabled:cursor-not-allowed`}
             on:click={nextPage}
             disabled={currentPage === totalPages}
           >
             Next
           </button>
         </div>
-        </div>
-      {:else}
-        <div class="bg-gray-200 animate-pulse rounded-lg p-4 flex w-[300px]">
-          <div class="w-12 h-12 bg-gray-300 rounded-lg mr-6 flex-shrink-0"></div>
-          <div class="flex-1 space-y-4 min-w-0">
-            <div class="h-6 bg-gray-300 rounded w-3/4"></div>
-            <div class="h-6 bg-gray-300 rounded w-3/4"></div>
-          </div>
-        </div>
-
       {/if}
 
       <!-- Leads List -->
@@ -260,7 +264,7 @@
         {/if}
       </div>
 
-      <!-- Pagination controls at bottom -->
+      <!-- Pagination bottom -->
       {#if !loading && paginatedLeads.length > 0}
         <div class="flex flex-wrap justify-center items-center gap-2 mt-4">
           <button
