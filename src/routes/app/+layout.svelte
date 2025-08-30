@@ -78,20 +78,20 @@
 
 <div class="min-h-screen flex bg-gray-100">
   <!-- Sidebar -->
-  <aside class="w-64 fixed top-0 left-0 h-screen bg-gradient-to-b from-[#00CF68] to-[#187967] text-white flex flex-col">
+  <aside class="w-64 fixed top-0 left-0 h-screen bg-gradient-to-b from-[#fff] to-[#fff] text-white flex flex-col">
     <div class="p-6 font-bold text-xl border-b border-white/20">
-      <img src="/logos/Complete_Logo_White.png" class="h-6" alt="Logo" />
+      <img src="/logos/Complete_Logo_Green.png" class="h-6" alt="Logo" />
     </div>
 
     <nav class="flex-1 p-4 space-y-2 overflow-y-auto jura">
-      <a href="/app" class="block py-2 px-3 rounded-lg hover:bg-white/10 {isActive('/app') ? 'bg-white/30 font-semibold' : ''}">Home</a>
-      <a href="/app/campaigns" class="block py-2 px-3 rounded-lg hover:bg-white/10 {isActive('/app/campaigns') ? 'bg-white/30 font-semibold' : ''}">Campaigns</a>
-      <a href="/app/leads" class="block py-2 px-3 rounded-lg hover:bg-white/10 {isActive('/app/leads') ? 'bg-white/30 font-semibold' : ''}">Leads</a>
-      <a href="/app/outreach" class="block py-2 px-3 rounded-lg hover:bg-white/10 {isActive('/app/outreach') ? 'bg-white/30 font-semibold' : ''}">Outreach</a>
-      <a href="/app/analytics" class="block py-2 px-3 rounded-lg hover:bg-white/10 {isActive('/app/analytics') ? 'bg-white/20 font-semibold' : ''}">Analytics</a>
-      <a href="/app/team" class="block py-2 px-3 rounded-lg hover:bg-white/10 {isActive('/app/team') ? 'bg-white/30 font-semibold' : ''}">Team</a>
-      <a href="/app/settings" class="block py-2 px-3 rounded-lg hover:bg-white/10 {isActive('/app/settings') ? 'bg-white/30 font-semibold' : ''}">Settings</a>
-      <a href="/app/help" class="block py-2 px-3 rounded-lg hover:bg-white/10 {isActive('/app/help') ? 'bg-white/30 font-semibold' : ''}">Help</a>
+      <a href="/app" class="block py-2 px-3 text-black rounded-lg hover:bg-green-200/10 {isActive('/app') ? 'bg-green-300/30 font-semibold' : ''}">Home</a>
+      <a href="/app/campaigns" class="block py-2 px-3 text-black rounded-lg hover:bg-green-200/10 {isActive('/app/campaigns') ? 'bg-green-300/30 font-semibold' : ''}">Campaigns</a>
+      <a href="/app/leads" class="block py-2 px-3 text-black rounded-lg hover:bg-green-200/10 {isActive('/app/leads') ? 'bg-green-300/30 font-semibold' : ''}">Leads</a>
+      <a href="/app/outreach" class="block py-2 px-3 text-black rounded-lg hover:bg-green-200/10 {isActive('/app/outreach') ? 'bg-green-300/30 font-semibold' : ''}">Outreach</a>
+      <a href="/app/analytics" class="block py-2 px-3 text-black rounded-lg hover:bg-green-200/10 {isActive('/app/analytics') ? 'bg-green-300/30 font-semibold' : ''}">Analytics</a>
+      <a href="/app/team" class="block py-2 px-3 text-black rounded-lg hover:bg-green-200/10 {isActive('/app/team') ? 'bg-green-300/30 font-semibold' : ''}">Team</a>
+      <a href="/app/settings" class="block py-2 px-3 text-black rounded-lg hover:bg-green-200/10 {isActive('/app/settings') ? 'bg-green-300/30 font-semibold' : ''}">Settings</a>
+      <a href="/app/help" class="block py-2 px-3 text-black rounded-lg hover:bg-green-200/10 {isActive('/app/help') ? 'bg-green-300/30 font-semibold' : ''}">Help</a>
     </nav>
 
     <div class="p-4 border-t border-white/20">

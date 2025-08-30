@@ -181,8 +181,8 @@
     </div>
   {:else}
     <div class="mt-20 w-full max-w-7xl mx-auto flex flex-col gap-6">
-      <div class="flex flex-col md:flex-row justify-between items-center mb-4 gap-4">
-        <h1 class="text-md bg-white p-2 rounded-lg shadow">
+      <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+        <h1 class="text-md bg-white p-3 rounded-lg shadow">
           <span class="font-bold">Campaign Leads ({leads.length})</span> - {selectedCampaign.name} @ {selectedCampaign.targetZip}
           <br>
           <span class="text-[0.7em] italic text-yellow-600">Max 60 Leads per search</span>
