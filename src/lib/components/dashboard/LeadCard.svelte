@@ -40,6 +40,7 @@
           </div>
         {/if}
       {:else}
+        <!-- svelte-ignore a11y_img_redundant_alt -->
         <img
           src={`data:image/svg+xml;utf8,${encodeURIComponent(`
             <svg width="192" height="192" xmlns="http://www.w3.org/2000/svg">

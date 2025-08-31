@@ -7,7 +7,6 @@ function buildPhotoUrl(photoName: string, maxWidth = 400) {
   return `https://places.googleapis.com/v1/${photoName}/media?maxWidthPx=${maxWidth}&key=${process.env.GOOGLE_PLACES_API_KEY}`;
 }
 
-
 export const POST: RequestHandler = async ({ request }) => {
   let allPlaces: any[] = [];
   let pageToken: string | undefined = undefined;
@@ -22,7 +21,7 @@ export const POST: RequestHandler = async ({ request }) => {
         body.pageToken = pageToken;
       }
       
-      const response = await fetch("https://places.googleapis.com/v1/places:searchText", {
+      const response = await fetch(GOOGLE_PLACES_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -63,7 +62,7 @@ async function main() {
   
   do {
 
-      const body: any = { textQuery: 'offices near 48134 within 30 miles' };
+      const body: any = { textQuery: 'Offices near 48134 within 30 miles' };
       if (pageToken) {
         // ✅ Wait 2 seconds before using nextPageToken
         await new Promise(resolve => setTimeout(resolve, 2000));
@@ -74,8 +73,8 @@ async function main() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Goog-Api-Key': "KEY",
-          'X-Goog-FieldMask': 'places.displayName,places.formattedAddress,places.location,places.photos,places.websiteUri,nextPageToken'
+          'X-Goog-Api-Key': "AIzaSyCDEoaTbC9sIFtuk_YHHRHMUwYICS5bGe4",
+          'X-Goog-FieldMask': 'places.id,places.reviews,places.googleMapsUri,places.primaryType,places.regularOpeningHours,places.reviewSummary,places.displayName,places.formattedAddress,places.nationalPhoneNumber,places.location,places.photos,places.websiteUri,nextPageToken'
       },
       body: JSON.stringify(body)
     });
@@ -93,7 +92,7 @@ async function main() {
   } while (pageToken && allPlaces.length < maxResults);
 
 
-  console.log(allPlaces);
+  console.log(allPlaces[0]);
   console.log('Total fetched:', allPlaces.length);
   return new Response(JSON.stringify({ allPlaces }), { status: 200 });
 

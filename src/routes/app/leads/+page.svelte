@@ -4,10 +4,12 @@
   import { currentCampaign } from '$lib/stores/campaign';
   import { get } from 'svelte/store';
   import LeadCard from '$lib/components/dashboard/LeadCard.svelte';
+  import LeadModal from '$lib/components/dashboard/LeadModal.svelte';
+  import Toast from '$lib/components/Toast.svelte';
   import { searchTerm } from '$lib/search-term';
   import { FileText, X } from 'lucide-svelte';
   import { fly } from 'svelte/transition';
-    import { goto } from '$app/navigation';
+  import { goto } from '$app/navigation';
 
   // Show Info Card "What is a Lead?"
   let showIntroCard = true;
@@ -36,9 +38,17 @@
     };
   };
 
+  let selectedLead: Lead | null = null;
+  function openLeadModal(lead: Lead) {
+    selectedLead = lead;
+  }
+
+  function closeLeadModal() {
+    selectedLead = null;
+  }
+
   let campaigns: Campaign[] = [];
   let selectedCampaign: Campaign | null = null;
-
   let leads: Lead[] = [];
   let currentPage = 1;
   const leadsPerPage = 10;
@@ -289,7 +299,7 @@
           {/each}
         {:else}
           {#each paginatedLeads as lead}
-            <LeadCard {lead} {moveToOutreach} />
+            <LeadCard {lead} {moveToOutreach} on:click={() => openLeadModal(lead)} />
           {/each}
         {/if}
       </div>
@@ -336,3 +346,4 @@
     </div>
   {/if}
 </main>
+ 

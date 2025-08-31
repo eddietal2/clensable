@@ -1,3 +1,6 @@
+/// npx prisma migrate dev --name <name>
+/// npx prisma generate
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -69,8 +72,7 @@ model Campaign {
   createdAt DateTime @default(now())
   orgId     String
   org       Org      @relation(fields: [orgId], references: [id])
-  leads     Business[]
-  outreach  Outreach[]
+  outreach  OutreachGroup[]
 }
 
 // Enum for campaign status
@@ -80,31 +82,29 @@ enum CampaignStatus {
   COMPLETED
 }
 
-
-// --------------------
-// Businesses (leads) tracked per campaign
-// --------------------
-model Business {
-  id         String     @id @default(cuid())
-  name       String
-  address    String
-  phone      String?
-
-  campaignId String?    // optional if business not yet assigned
-  campaign   Campaign?  @relation(fields: [campaignId], references: [id])
-}
-
 // --------------------
 // Outreach messages (email/SMS) tied to campaigns
 // --------------------
-model Outreach {
-  id         String    @id @default(cuid())
-  email      String
-  status     String    @default("pending") // pending, sent, replied, etc.
-
+model OutreachGroup {
+  id         String        @id @default(cuid())
+  campaign   Campaign      @relation(fields: [campaignId], references: [id])
   campaignId String
-  campaign   Campaign  @relation(fields: [campaignId], references: [id])
+  leads      OutreachLead[]
+  createdAt  DateTime      @default(now())
 }
+
+model OutreachLead {
+  id              String        @id @default(cuid())
+  outreachGroup   OutreachGroup @relation(fields: [outreachGroupId], references: [id])
+  outreachGroupId String
+  placeId         String        // store the Google Place ID or unique lead ID
+  leadData        Json
+  status          String        @default("pending") // "pending", "contacted", "replied"
+  createdAt       DateTime      @default(now())
+
+  @@unique([outreachGroupId, placeId]) // prevent duplicate leads in same group
+}
+
 
 model Session {
   id        String   @id @default(cuid())
