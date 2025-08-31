@@ -6,6 +6,7 @@
   import LeadCard from '$lib/components/dashboard/LeadCard.svelte';
   import LeadModal from '$lib/components/dashboard/LeadModal.svelte';
   import Toast from '$lib/components/Toast.svelte';
+  import OutreachGroupModal from '$lib/components/dashboard/OutreachGroupModal.svelte'
   import { searchTerm } from '$lib/search-term';
   import { FileText, X } from 'lucide-svelte';
   import { fly } from 'svelte/transition';
@@ -38,14 +39,32 @@
     };
   };
 
+  // LeadModal
   let selectedLead: Lead | null = null;
   function openLeadModal(lead: Lead) {
     selectedLead = lead;
   }
-
   function closeLeadModal() {
     selectedLead = null;
   }
+
+  // OutreachGroupModal
+  // Modal state
+  let showOutreachModal = false;
+  let selectedLeadForModal: Lead | null = null;
+
+  // Open modal function
+  function openOutreachModal(lead: Lead) {
+    selectedLeadForModal = lead;
+    showOutreachModal = true;
+  }
+
+  // Close modal function
+  function closeOutreachModal() {
+    selectedLeadForModal = null;
+    showOutreachModal = false;
+  }
+
 
   let campaigns: Campaign[] = [];
   let selectedCampaign: Campaign | null = null;
@@ -299,7 +318,7 @@
           {/each}
         {:else}
           {#each paginatedLeads as lead}
-            <LeadCard {lead} {moveToOutreach} on:click={() => openLeadModal(lead)} />
+            <LeadCard {lead} onAddToOutreach={openOutreachModal}  />
           {/each}
         {/if}
       </div>

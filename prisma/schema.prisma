@@ -67,6 +67,7 @@ model Campaign {
   description String?
   targetZip String
   radius    Int
+  leads     Lead[]
   category  String
   status    CampaignStatus @default(DRAFT)
   createdAt DateTime @default(now())
@@ -80,6 +81,16 @@ enum CampaignStatus {
   DRAFT
   ACTIVE
   COMPLETED
+}
+
+model Lead {
+  id         String     @id @default(cuid())
+  name       String
+  address    String
+  phone      String?
+
+  campaignId String?    // optional if business not yet assigned
+  campaign   Campaign?  @relation(fields: [campaignId], references: [id])
 }
 
 // --------------------
