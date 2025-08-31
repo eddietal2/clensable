@@ -16,7 +16,7 @@
   }
 </script>
 
-<div class="bg-white rounded-lg shadow hover:shadow-lg transition w-[1000px] flex flex-col overflow-hidden">
+<div class="bg-white rounded-lg shadow hover:shadow-lg transition max-w-4xl flex flex-col overflow-hidden">
   <div class="p-4 flex gap-4">
     <!-- Photo carousel -->
     <div class="w-48 h-48 relative flex-shrink-0 rounded-lg overflow-hidden">

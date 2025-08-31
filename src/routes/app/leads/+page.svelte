@@ -225,7 +225,7 @@
     </div>
   {:else}
     <!-- Leads header, pagination, list, and skeletons remain unchanged -->
-    <div class="mt-20 w-full max-w-4xl mx-auto flex flex-col gap-6 {showIntroCard ? 'mt-4' : 'mt-14'}">
+    <div class="w-full max-w-4xl mx-auto flex flex-col gap-6 {showIntroCard ? 'mt-4' : 'mt-14'}">
       <!-- Header + pagination top -->
       {#if !loading && paginatedLeads.length > 0}
         <div class="flex flex-wrap justify-end items-center gap-2 mt-4">

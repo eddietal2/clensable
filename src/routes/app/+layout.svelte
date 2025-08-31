@@ -3,7 +3,7 @@
   import { derived } from 'svelte/store';
   import { User, Home, FileText, Users, MessageCircle, Settings, HelpCircle, ChevronLeft, ChevronRight } from 'lucide-svelte';
   import Toast from '$lib/components/Toast.svelte';
-  import { currentCampaign, type CampaignStore } from '$lib/stores/campaign';
+  import { currentCampaign, campaignsStore, type CampaignStore } from '$lib/stores/campaign';
   import { onMount } from 'svelte';
   import { searchTerm } from '$lib/search-term';
   import { greenText, inputField, selectField } from '$lib/styles';
@@ -20,10 +20,15 @@
       const res = await fetch('/api/campaigns');
       if (!res.ok) throw new Error('Failed to fetch campaigns');
       campaigns = await res.json();
+      campaignsStore.set(campaigns);
     } catch (err) {
       console.error('Error fetching campaigns:', err);
     }
   }
+
+  $effect(() => {
+    campaigns = $campaignsStore;
+  });
 
   $effect(() => {
     const c = $currentCampaign;
@@ -132,7 +137,7 @@
       {#if $page.url.pathname === '/app/leads'}
       <div class="ml-auto flex items-center space-x-2">
         <p class={`${greenText} text-sm font-medium`}>Campaign:</p>
-        <select bind:value={selectedCampaignId} class={`${selectField}`}>
+        <select bind:value={selectedCampaignId} class={`${selectField} w-64`}>
           <option value="" disabled selected>Select Campaign</option>
           {#each campaigns as c}
             <option value={c.id}>{c.name}</option>

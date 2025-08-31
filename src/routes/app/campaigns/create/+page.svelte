@@ -3,6 +3,7 @@
   import { goto } from "$app/navigation";
   import { CheckCircle } from "lucide-svelte";
   import { greenGradient, backButton, buttonBase, grayGradient, inputField, selectField } from '$lib/styles';
+    import { campaignsStore } from "$lib/stores/campaign";
 
   let name = "";
   let description = "";
@@ -45,9 +46,13 @@
 
       if (!res.ok) {
         const data = await res.json();
+        campaignsStore.update((camps) => [...camps, data]);
         errorMsg = data.error || "Failed to create campaign.";
         return;
       }
+
+      const data = await res.json();
+      campaignsStore.update((camps) => [...camps, data]);
 
       // Show success message instead of redirecting
       campaignName = name;
