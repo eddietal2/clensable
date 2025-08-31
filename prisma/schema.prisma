@@ -62,18 +62,19 @@ model Org {
 // Campaigns belong to an org and track leads and outreach
 // --------------------
 model Campaign {
-  id        String   @id @default(cuid())
-  name      String
-  description String?
-  targetZip String
-  radius    Int
-  leads     Lead[]
-  category  String
-  status    CampaignStatus @default(DRAFT)
-  createdAt DateTime @default(now())
-  orgId     String
-  org       Org      @relation(fields: [orgId], references: [id])
-  outreach  OutreachGroup[]
+  id            String   @id @default(cuid())
+  name          String
+  description   String?
+  targetZip     String
+  radius        Int
+  leads         Lead[]
+  category      String
+  status        CampaignStatus @default(DRAFT)
+  createdAt     DateTime @default(now())
+  orgId         String
+  org           Org      @relation(fields: [orgId], references: [id])
+  outreach      OutreachGroup[]
+  leadBlacklist CampaignLeadBlacklist[]
 }
 
 // Enum for campaign status
@@ -82,6 +83,17 @@ enum CampaignStatus {
   ACTIVE
   COMPLETED
 }
+
+model CampaignLeadBlacklist {
+  id         String    @id @default(cuid())
+  campaign   Campaign  @relation(fields: [campaignId], references: [id])
+  campaignId String
+  placeId    String
+  createdAt  DateTime  @default(now())
+
+  @@unique([campaignId, placeId]) // prevent duplicate blacklists for same campaign
+}
+
 
 model Lead {
   id         String     @id @default(cuid())
