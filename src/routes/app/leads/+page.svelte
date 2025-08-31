@@ -1,12 +1,13 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
-  import { greenGradient, grayGradient, buttonBase, goldText } from '$lib/styles';
+  import { greenGradient, grayGradient, buttonBase, goldText, blueGradient } from '$lib/styles';
   import { currentCampaign } from '$lib/stores/campaign';
   import { get } from 'svelte/store';
   import LeadCard from '$lib/components/dashboard/LeadCard.svelte';
   import { searchTerm } from '$lib/search-term';
-  import { X } from 'lucide-svelte';
+  import { FileText, X } from 'lucide-svelte';
   import { fly } from 'svelte/transition';
+    import { goto } from '$app/navigation';
 
   // Show Info Card "What is a Lead?"
   let showIntroCard = true;
@@ -152,16 +153,10 @@
     alert(`Lead ${lead.name} added to Outreach for ${selectedCampaign?.name}`);
   }
 
-  function prevPhoto(lead: Lead) {
-    if (!lead.photoUrls || lead.photoUrls.length === 0) return;
-    lead.currentPhotoIndex = (lead.currentPhotoIndex! - 1 + lead.photoUrls.length) % lead.photoUrls.length;
-    leads = [...leads]; // trigger reactivity
-  }
-
-  function nextPhoto(lead: Lead) {
-    if (!lead.photoUrls || lead.photoUrls.length === 0) return;
-    lead.currentPhotoIndex = (lead.currentPhotoIndex! + 1) % lead.photoUrls.length;
-    leads = [...leads]; // trigger reactivity
+  function goToCampaign() {
+    if (selectedCampaign) {
+      goto(`/app/campaigns/${selectedCampaign.id}`);
+    }
   }
 
   const unsubscribe = currentCampaign.subscribe(storeCampaign => {
@@ -228,41 +223,52 @@
     <div class="w-full max-w-4xl mx-auto flex flex-col gap-6 {showIntroCard ? 'mt-4' : 'mt-14'}">
       <!-- Header + pagination top -->
       {#if !loading && paginatedLeads.length > 0}
-        <div class="flex flex-wrap justify-end items-center gap-2 mt-4">
-          <button
-            class={`${grayGradient} text-white px-3 py-1.5 rounded-md text-sm w-20 disabled:opacity-50 disabled:cursor-not-allowed`}
-            on:click={prevPage}
-            disabled={currentPage === 1}
-          >
-            Previous
-          </button>
-
-          <div class="flex flex-wrap gap-1 justify-center">
-            {#each visiblePages as page}
-              {#if page === '...'}
-                <span class="px-2 py-1 text-gray-400 text-sm select-none">…</span>
-              {:else}
-                <button
-                  class={`px-2 py-1 text-sm rounded-md border transition-colors duration-200
-                    ${currentPage === page
-                      ? 'bg-green-600 text-white border-green-600'
-                      : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-green-400'}
-                  `}
-                  on:click={() => goToPage(Number(page))}
-                >
-                  {page}
-                </button>
-              {/if}
-            {/each}
+        <div class="flex justify-between items-center mt-4 flex-wrap gap-2">
+          <!-- Left Section: Test Button -->
+          <div class="flex flex-wrap justify-start items-center gap-2">
+            <button on:click={() => {goToCampaign()}} class={`${blueGradient} ${buttonBase}`}>
+              <FileText class="w-5 h-5" />
+              <span>View Campaign</span>
+            </button>
           </div>
 
-          <button
-            class={`${grayGradient} text-white px-3 py-1.5 rounded-md text-sm w-20 disabled:opacity-50 disabled:cursor-not-allowed`}
-            on:click={nextPage}
-            disabled={currentPage === totalPages}
-          >
-            Next
-          </button>
+    <!-- Right Section: Pagination Buttons -->
+    <div class="flex flex-wrap justify-end items-center gap-2">
+      <button
+        class={`${grayGradient} text-white px-3 py-1.5 rounded-md text-sm w-20 disabled:opacity-50 disabled:cursor-not-allowed`}
+              on:click={prevPage}
+              disabled={currentPage === 1}
+      >
+        Previous
+      </button>
+
+      <div class="flex flex-wrap gap-1 justify-center">
+        {#each visiblePages as page}
+          {#if page === '...'}
+            <span class="px-2 py-1 text-gray-400 text-sm select-none">…</span>
+          {:else}
+            <button
+              class={`px-2 py-1 text-sm rounded-md border transition-colors duration-200
+                ${currentPage === page
+                  ? 'bg-green-600 text-white border-green-600'
+                  : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-green-400'}
+              `}
+              on:click={() => goToPage(Number(page))}
+            >
+              {page}
+            </button>
+                {/if}
+              {/each}
+      </div>
+
+      <button
+        class={`${grayGradient} text-white px-3 py-1.5 rounded-md text-sm w-20 disabled:opacity-50 disabled:cursor-not-allowed`}
+        on:click={nextPage}
+        disabled={currentPage === totalPages}
+      >
+        Next
+            </button>
+          </div>
         </div>
       {/if}
 

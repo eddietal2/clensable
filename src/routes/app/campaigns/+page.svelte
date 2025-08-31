@@ -141,7 +141,7 @@
     {:else}
       <table class="w-full text-left max-w-4xl">
         <thead>
-          <tr class="jura border-b border-gray-200">
+          <tr class="jura text-xs border-b border-gray-200">
             <th class="px-4 py-2">Name</th>
             <th class="px-4 py-2">Created At</th>
             <th class="px-4 py-2">Leads</th>
@@ -153,7 +153,7 @@
         </thead>
         <tbody>
           {#each campaigns as campaign}
-            <tr class="border-b border-gray-100 hover:bg-gray-50">
+            <tr class="text-xs border-b border-gray-100 hover:bg-gray-50">
               <td class="px-4 py-2">{campaign.name}</td>
               <td class="px-4 py-2">{campaign.createdAt}</td>
               <td class="px-4 py-2">{campaign.leadsCount}</td>
