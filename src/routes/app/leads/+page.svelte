@@ -6,7 +6,7 @@
   import LeadCard from '$lib/components/dashboard/LeadCard.svelte';
   import LeadModal from '$lib/components/dashboard/LeadModal.svelte';
   import Toast from '$lib/components/Toast.svelte';
-  import OutreachGroupModal from '$lib/components/dashboard/OutreachGroupModal.svelte'
+  import AddLeadModal from '$lib/components/dashboard/AddLeadModal.svelte'
   import { searchTerm } from '$lib/search-term';
   import { FileText, X } from 'lucide-svelte';
   import { fly } from 'svelte/transition';
@@ -283,12 +283,6 @@
               <FileText class="w-5 h-5" />
               <span>View Campaign</span>
             </button>
-            <button
-              class={`${blueGradient} ${buttonBase}`}
-            >
-              <FileText class="w-5 h-5" />
-              <span>Create Outreach Groups</span>
-            </button>
           </div>
 
     <!-- Right Section: Pagination Buttons -->
@@ -394,18 +388,18 @@
       {/if}
     </div>
   {/if}
-
+  
+  <!-- AddLeadModal -->
   {#if showOutreachModal && selectedLeadForModal}
-  <OutreachGroupModal
-    lead={selectedLeadForModal}
-    campaignId={selectedCampaign?.id}
-    groupName={selectedLeadForModal.groupName}
-    on:close={closeOutreachModal}
-    on:add={(e) => addLeadToGroup(e.detail.lead, e.detail.groupName)}
-    on:removeFromCampaign={(e) => removeLeadFromCampaign(e.detail.leadId)}
-    on:blacklist={(e) => blacklistLead(e.detail.leadId)}
-  />
-{/if}
-
+    <AddLeadModal
+      lead={selectedLeadForModal}
+      campaignId={selectedCampaign?.id}
+      campaignName={selectedCampaign?.name}
+      on:close={closeOutreachModal}
+      on:add={(e) => addLeadToGroup(e.detail.lead, e.detail.groupName)}
+      on:removeFromCampaign={(e) => removeLeadFromCampaign(e.detail.leadId)}
+      on:blacklist={(e) => blacklistLead(e.detail.leadId)}
+    />
+  {/if}
 </main>
  
