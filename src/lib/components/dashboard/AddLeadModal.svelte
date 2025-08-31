@@ -1,6 +1,8 @@
 <script lang="ts">
   import { buttonBase, grayGradient, greenGradient, greenText } from '$lib/styles';
   import { createEventDispatcher } from 'svelte';
+  import ConfirmModal from '$lib/components/ConfirmModal.svelte';
+  import { addToast } from '$lib/stores/toast'; // ✅ use toast store
 
   export let lead: any;
   export let campaignId: string | undefined;
@@ -9,13 +11,14 @@
 
   const dispatch = createEventDispatcher();
 
-  // Track all available groups
   let allGroups = [...outreachGroups];
-
-  // Track selected radio
   let selectedGroup = allGroups[0];
+  $: lastGroup = allGroups[allGroups.length - 1];
 
   const MAX_GROUPS = 5;
+
+  // confirm modal flag
+  let showConfirm = false;
 
   function close() {
     dispatch('close');
@@ -23,23 +26,36 @@
 
   function createNewGroup() {
     if (allGroups.length >= MAX_GROUPS) return;
-
-    const nextLetter = String.fromCharCode(65 + allGroups.length); // B, C, D, E
+    const nextLetter = String.fromCharCode(65 + allGroups.length);
     const newGroupName = `OutreachGroup-${nextLetter}`;
     allGroups = [...allGroups, newGroupName];
     selectedGroup = newGroupName;
+
+    // ✅ success toast
+    addToast(`Created ${newGroupName}`, 'success');
   }
 
-  function removeLastGroup() {
-    if (allGroups.length <= 1) return; // never remove initial group
+  function requestRemoveLastGroup() {
+    if (allGroups.length <= 1) return;
+    showConfirm = true;
+  }
 
+  function confirmRemove() {
     const removed = allGroups.pop();
-    allGroups = [...allGroups]; // reassign to trigger reactivity
+    allGroups = [...allGroups];
 
-    // If removed group was selected, fallback to previous
     if (selectedGroup === removed) {
       selectedGroup = allGroups[allGroups.length - 1];
     }
+
+    showConfirm = false;
+
+    // ✅ success toast
+    addToast(`${removed} removed`, 'error');
+  }
+
+  function cancelRemove() {
+    showConfirm = false;
   }
 
   function addLeadToGroup() {
@@ -47,15 +63,21 @@
       dispatch('add', { lead, groupName: selectedGroup });
       dispatch('removeFromCampaign', { leadId: lead.id, campaignId });
       dispatch('blacklist', { leadId: lead.id });
+
+      // ✅ success toast
+      addToast(`Lead "${lead.name}" added to ${selectedGroup}`, 'success');
+
       close();
     } catch (err) {
       console.error('Failed to add lead to group', err);
+      addToast('Failed to add lead to outreach group', 'error');
     }
   }
 
   $: maxGroupsReached = allGroups.length >= MAX_GROUPS;
 </script>
 
+<!-- Main Modal -->
 <div
   class="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
   role="dialog"
@@ -72,13 +94,12 @@
       An outreach group is a collection of leads organized for targeted communication. 
       Every lead must belong to an outreach group.
     </p>
-    <p>Campaign: <span class="font-semibold">{campaignName}</span></p>
-    <p class="mb-4 pb-4 border-b border-gray-200">Lead: <span class="font-semibold">{lead.name}</span></p>
+    <p><span class="font-semibold">Campaign:</span> {campaignName}</p>
+    <p class="mb-4 pb-4 border-b border-gray-200"><span class="font-semibold">Lead:</span> {lead.name}</p>
 
     <fieldset class="mb-4">
       <h2 class="jura font-bold text-lg text-black/60">Select Outreach Group</h2>
       <p class="mb-4 text-xs">Only create as many groups as you need.</p>
-      <p class="mb-4 text-xs">DEV - When an ORG is deleted, its Leads are removed from blacklist</p>
 
       {#each allGroups as group}
         <label class="flex items-center gap-2 mb-1">
@@ -98,7 +119,7 @@
       {/if}
       {#if allGroups.length > 1}
         <button class="flex items-center px-3 shadow bg-gray-200 text-xs text-black/80 rounded hover:bg-gray-300"
-                on:click={removeLastGroup}>
+                on:click={requestRemoveLastGroup}>
           <span class="text-red-600 text-4xl mr-1 relative bottom-1">-</span>
           Remove Last OutreachGroup
         </button>
@@ -115,3 +136,14 @@
     </div>
   </div>
 </div>
+
+<!-- ConfirmModal Overlay -->
+{#if showConfirm}
+  <ConfirmModal
+    message={`Are you sure you want to remove <strong>${lastGroup}</strong>?<br/><br/>Leads in that group will be un-blacklisted.`}
+    confirmText="Remove"
+    cancelText="Cancel"
+    on:confirm={confirmRemove}
+    on:cancel={cancelRemove}
+  />
+{/if}

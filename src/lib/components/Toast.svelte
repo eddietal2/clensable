@@ -10,7 +10,7 @@
       out:fly={{ x: 200, duration: 300 }}
       class="px-4 py-2 rounded shadow text-white"
       class:bg-[#187967]={toast.type === 'success'}
-      class:bg-red-500={toast.type === 'error'}
+      class:bg-red-800={toast.type === 'error'}
       class:bg-blue-500={toast.type === 'info'}
     >
       {toast.message}
