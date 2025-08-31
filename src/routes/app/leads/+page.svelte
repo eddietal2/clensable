@@ -24,6 +24,7 @@
   };
 
   type Lead = {
+    id: string, // Places ID
     name: string;
     address?: string;
     phone?: string;
@@ -50,13 +51,38 @@
 
   // OutreachGroupModal
   // Modal state
+  let outreachGroups: { name: string; leads: Lead[] }[] = [];
   let showOutreachModal = false;
-  let selectedLeadForModal: Lead | null = null;
+  let selectedLeadForModal: any | null = null;
 
   // Open modal function
   function openOutreachModal(lead: Lead) {
-    selectedLeadForModal = lead;
-    showOutreachModal = true;
+  const groupLetter = String.fromCharCode(65 + outreachGroups.length);
+  const groupName = `OutreachGroup-${groupLetter}`;
+  
+  selectedLeadForModal = { ...lead, groupName }; 
+  showOutreachModal = true;
+  }
+  function addLeadToGroup(lead: Lead, groupName: string) {
+    let group = outreachGroups.find(g => g.name === groupName);
+    if (!group) {
+    group = { name: groupName, leads: [] };
+    outreachGroups.push(group);
+    }
+    group.leads.push(lead);
+    console.log('Added lead to group', groupName, lead);
+  }
+
+  function removeLeadFromCampaign(leadId: string) {
+    console.log(leadId, "Leads Remaining: " + leads.length);
+
+    leads = leads.filter(l => l.id !== leadId);
+    console.log('Removed lead from campaign', leadId);
+  }
+
+  function blacklistLead(leadId: string) {
+    // Call API or local store to prevent this lead from being added again
+    console.log('Lead blacklisted', leadId);
   }
 
   // Close modal function
@@ -64,7 +90,6 @@
     selectedLeadForModal = null;
     showOutreachModal = false;
   }
-
 
   let campaigns: Campaign[] = [];
   let selectedCampaign: Campaign | null = null;
@@ -106,14 +131,13 @@
     });
 
     const data = await res.json();
-
     leads = data.allPlaces.map((p: any) => ({
+      id: p.id,
       name: p.displayName?.text ?? 'Unknown',
       address: p.formattedAddress ?? '',
       phone: p.nationalPhoneNumber,
       websiteUri: p.websiteUri,
       generativeSummary: p.generativeSummary,
-      status: 'New',
       score: Math.floor(Math.random() * 30),
       photoUrls: p.photoUrls,
       currentPhotoIndex: 0
@@ -366,11 +390,16 @@
   {/if}
 
   {#if showOutreachModal && selectedLeadForModal}
-    <OutreachGroupModal
-      lead={selectedLeadForModal}
-      campaignId={selectedCampaign?.id}
-      on:close={closeOutreachModal}
-    />
-  {/if}
+  <OutreachGroupModal
+    lead={selectedLeadForModal}
+    campaignId={selectedCampaign?.id}
+    groupName={selectedLeadForModal.groupName}
+    on:close={closeOutreachModal}
+    on:add={(e) => addLeadToGroup(e.detail.lead, e.detail.groupName)}
+    on:removeFromCampaign={(e) => removeLeadFromCampaign(e.detail.leadId)}
+    on:blacklist={(e) => blacklistLead(e.detail.leadId)}
+  />
+{/if}
+
 </main>
  

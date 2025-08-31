@@ -1,4 +1,3 @@
-import { log } from 'console';
 import type { RequestHandler } from './$types';
 
 const GOOGLE_PLACES_URL = 'https://places.googleapis.com/v1/places:searchText';
@@ -26,7 +25,7 @@ export const POST: RequestHandler = async ({ request }) => {
         headers: {
           'Content-Type': 'application/json',
           'X-Goog-Api-Key': `${process.env.GOOGLE_PLACES_API_KEY}`,
-          'X-Goog-FieldMask': 'places.displayName,places.formattedAddress,places.location,places.photos,places.websiteUri,nextPageToken'
+          'X-Goog-FieldMask': 'places.id,places.reviews,places.googleMapsUri,places.primaryType,places.regularOpeningHours,places.reviewSummary,places.displayName,places.formattedAddress,places.nationalPhoneNumber,places.location,places.photos,places.websiteUri,nextPageToken'
       },
       body: JSON.stringify(body)
     });
