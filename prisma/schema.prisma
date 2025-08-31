@@ -86,11 +86,13 @@ enum CampaignStatus {
 // Outreach messages (email/SMS) tied to campaigns
 // --------------------
 model OutreachGroup {
-  id         String        @id @default(cuid())
-  campaign   Campaign      @relation(fields: [campaignId], references: [id])
-  campaignId String
-  leads      OutreachLead[]
-  createdAt  DateTime      @default(now())
+  id          String        @id @default(cuid())
+  campaign    Campaign      @relation(fields: [campaignId], references: [id])
+  campaignId  String
+  description String
+  name        String
+  leads       OutreachLead[]
+  createdAt   DateTime      @default(now())
 }
 
 model OutreachLead {
