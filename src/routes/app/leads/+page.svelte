@@ -318,7 +318,7 @@
           {/each}
         {:else}
           {#each paginatedLeads as lead}
-            <LeadCard {lead} onAddToOutreach={openOutreachModal}  />
+            <LeadCard {lead} onAddToOutreach={openOutreachModal} />
           {/each}
         {/if}
       </div>
@@ -363,6 +363,14 @@
         </div>
       {/if}
     </div>
+  {/if}
+
+  {#if showOutreachModal && selectedLeadForModal}
+    <OutreachGroupModal
+      lead={selectedLeadForModal}
+      campaignId={selectedCampaign?.id}
+      on:close={closeOutreachModal}
+    />
   {/if}
 </main>
  

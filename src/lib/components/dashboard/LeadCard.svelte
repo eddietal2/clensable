@@ -2,7 +2,7 @@
   import { greenGradient, buttonBase, goldText } from '$lib/styles';
   export let lead: any;
   export let onAddToOutreach: (lead: any) => void;
-
+  console.log('LeadCard received onAddToOutreach:', onAddToOutreach);
 
   let currentPhotoIndex = lead.currentPhotoIndex ?? 0;
 
@@ -83,7 +83,7 @@
   <div class="border-t-2 border-[#99999920] p-4 flex justify-end">
     <button
       class={`${greenGradient} ${buttonBase}`}
-      on:click={() => console.log('lol')}
+      on:click={() => onAddToOutreach(lead)}
     >
       Add to Outreach
     </button>
