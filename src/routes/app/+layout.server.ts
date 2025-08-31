@@ -10,5 +10,7 @@ export const load = async ({ locals, url }) => {
         throw redirect(302, '/app/create-org');
     }
 
+    console.log(locals);
+    
     return { user: locals.user };
 };
