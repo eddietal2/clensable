@@ -94,7 +94,6 @@ model CampaignLeadBlacklist {
   @@unique([campaignId, placeId]) // prevent duplicate blacklists for same campaign
 }
 
-
 model Lead {
   id         String     @id @default(cuid())
   name       String
@@ -129,7 +128,6 @@ model OutreachLead {
 
   @@unique([outreachGroupId, placeId]) // prevent duplicate leads in same group
 }
-
 
 model Session {
   id        String   @id @default(cuid())

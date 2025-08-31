@@ -110,9 +110,23 @@
     console.log('Removed lead from campaign', leadId);
   }
 
-  function blacklistLead(leadId: string) {
-    // Call API or local store to prevent this lead from being added again
-    console.log('Lead blacklisted', leadId);
+  async function blacklistLead(leadId: string) {
+    try {
+      await fetch('/api/leads/blacklist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          leadId,
+          campaignId: selectedCampaign?.id
+        })
+      });
+
+      // Remove from local leads array
+      leads = leads.filter(l => l.id !== leadId);
+
+    } catch (err) {
+      console.error('Failed to blacklist lead:', err);
+    }
   }
 
   // Close modal function
@@ -154,26 +168,29 @@
     await new Promise(r => setTimeout(r, 500));
 
     const res = await fetch('/api/leads', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        textQuery: `${campaign.category} near ${campaign.targetZip} within ${campaign.radius} miles`,
-        maxResults: 60
-      })
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            textQuery: `${campaign.category} near ${campaign.targetZip} within ${campaign.radius} miles`,
+            maxResults: 60
+        })
     });
 
     const data = await res.json();
-    leads = data.allPlaces.map((p: any) => ({
-      id: p.id,
-      name: p.displayName?.text ?? 'Unknown',
-      address: p.formattedAddress ?? '',
-      phone: p.nationalPhoneNumber,
-      websiteUri: p.websiteUri,
-      generativeSummary: p.generativeSummary,
-      score: Math.floor(Math.random() * 30),
-      photoUrls: p.photoUrls,
-      currentPhotoIndex: 0
+    let allLeads: Lead[] = data.allPlaces.map((p: any) => ({
+        id: p.id,
+        name: p.displayName?.text ?? 'Unknown',
+        address: p.formattedAddress ?? '',
+        phone: p.nationalPhoneNumber,
+        websiteUri: p.websiteUri,
+        generativeSummary: p.generativeSummary,
+        score: Math.floor(Math.random() * 30),
+        photoUrls: p.photoUrls,
+        currentPhotoIndex: 0
     }));
+
+    const blacklisted: string[] = await fetch(`/api/leads/blacklist/${campaign.id}`).then(r => r.json());
+    leads = allLeads.filter(l => !blacklisted.includes(l.id));
 
     loading = false;
     scrollToTop();
@@ -183,22 +200,20 @@
     try {
       const res = await fetch(`/api/outreach/groups/${campaignId}`);
       if (!res.ok) throw new Error('Failed to fetch outreach groups');
-    
+
       const groups: string[] = await res.json();
-    
+
       // Always include default group A
       if (!groups.includes('OutreachGroup-A')) {
         groups.unshift('OutreachGroup-A');
       }
-    
+
       campaignOutreachGroups[campaignId] = groups;
     } catch (err) {
       console.error(err);
       campaignOutreachGroups[campaignId] = ['OutreachGroup-A'];
     }
   }
-
-
 
   // ----------------------------
   // Reactive search & pagination
