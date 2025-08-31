@@ -82,7 +82,7 @@
       </button>
     </div>
 
-    <nav class="flex-1 p-2 space-y-1 overflow-y-auto jura">
+    <nav class="flex-1 p-2 space-y-1 overflow-y-auto jura text-sm">
       <a href="/app" class={`flex items-center gap-2 py-2 px-3 rounded-lg hover:bg-green-200/10 ${isActive('/app') ? 'bg-green-300/30 font-semibold' : ''}`}>
         <Home class="h-5 w-5" />
         <span class="truncate">{isSidebarOpen ? 'Home' : ''}</span>
