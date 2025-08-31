@@ -57,11 +57,11 @@
 
   // Open modal function
   function openOutreachModal(lead: Lead) {
-  const groupLetter = String.fromCharCode(65 + outreachGroups.length);
-  const groupName = `OutreachGroup-${groupLetter}`;
-  
-  selectedLeadForModal = { ...lead, groupName }; 
-  showOutreachModal = true;
+    const groupLetter = String.fromCharCode(65 + outreachGroups.length);
+    const groupName = `OutreachGroup-${groupLetter}`;
+    
+    selectedLeadForModal = { ...lead, groupName }; 
+    showOutreachModal = true;
   }
   function addLeadToGroup(lead: Lead, groupName: string) {
     let group = outreachGroups.find(g => g.name === groupName);
@@ -282,6 +282,12 @@
             <button on:click={() => {goToCampaign()}} class={`${blueGradient} ${buttonBase}`}>
               <FileText class="w-5 h-5" />
               <span>View Campaign</span>
+            </button>
+            <button
+              class={`${blueGradient} ${buttonBase}`}
+            >
+              <FileText class="w-5 h-5" />
+              <span>Create Outreach Groups</span>
             </button>
           </div>
 
