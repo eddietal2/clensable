@@ -8,7 +8,6 @@
   import { searchTerm } from '$lib/search-term';
   import { greenText, inputField, selectField } from '$lib/styles';
   
-
   let { children } = $props();
 
   let campaigns = $state<CampaignStore[]>([]);
@@ -66,8 +65,6 @@
     }
   );
 
-  
-
   onMount(fetchCampaigns);
 </script>
 
@@ -124,11 +121,11 @@
   <div class={`flex-1 flex flex-col transition-all duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-16'}`}>
     <!-- Top bar -->
     <header class={`h-15 bg-[#00CF6805] backdrop-blur-md shadow flex items-center justify-between px-6 fixed top-0 transition-all duration-300 ${isSidebarOpen ? 'left-64' : 'left-16'} right-0 z-20`}>
-      <h1 class="text-xl font-semibold jura">
+      <h1 class="text-lg font-semibold jura">
         {$currentTitle}
         {#if $currentCampaign && $page.url.pathname === '/app/leads'}
           {#if $currentCampaign.leadCount !== undefined}
-            — <span class={`${greenText}`}>{$currentCampaign.leadCount} @ {$currentCampaign.targetZip}</span>
+            — <span class={`${greenText} text-lg`}>{$currentCampaign.leadCount} @ {$currentCampaign.targetZip}</span>
           {/if}
         {/if}
       </h1>
