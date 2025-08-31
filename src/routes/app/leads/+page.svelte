@@ -341,8 +341,10 @@
             </div>
           {/each}
         {:else}
-          {#each paginatedLeads as lead}
-            <LeadCard {lead} onAddToOutreach={openOutreachModal} />
+          {#each leads as lead (lead.id)}
+            <div transition:fly={{ x: 20, duration: 150 }}>
+              <LeadCard {lead} onAddToOutreach={openOutreachModal} />
+            </div>
           {/each}
         {/if}
       </div>
