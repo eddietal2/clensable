@@ -51,26 +51,56 @@
 
   // OutreachGroupModal
   // Modal state
+  let campaignOutreachGroups: Record<string, string[]> = {}; // persistent per campaign
   let outreachGroups: { name: string; leads: Lead[] }[] = [];
   let showOutreachModal = false;
   let selectedLeadForModal: any | null = null;
 
   // Open modal function
   function openOutreachModal(lead: Lead) {
-    const groupLetter = String.fromCharCode(65 + outreachGroups.length);
-    const groupName = `OutreachGroup-${groupLetter}`;
+    selectedLeadForModal = lead;
     
-    selectedLeadForModal = { ...lead, groupName }; 
+    // initialize groups for this campaign if not present
+    if (selectedCampaign) {
+      if (!campaignOutreachGroups[selectedCampaign.id]) {
+        campaignOutreachGroups[selectedCampaign.id] = ['OutreachGroup-A'];
+      }
+    }
+  
     showOutreachModal = true;
   }
-  function addLeadToGroup(lead: Lead, groupName: string) {
-    let group = outreachGroups.find(g => g.name === groupName);
-    if (!group) {
-    group = { name: groupName, leads: [] };
-    outreachGroups.push(group);
+  // Handle adding/removing groups from the modal
+  function updateGroupsForCampaign(campaignId: string | undefined, groups: string[]) {
+    if (!campaignId) return;
+    campaignOutreachGroups[campaignId] = groups;
+  }
+  async function addLeadToGroup(lead: Lead, groupName: string) {
+    if (!selectedCampaign) return;
+    
+    try {
+      const res = await fetch('/api/outreach/add-group', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          campaignId: selectedCampaign.id,
+          groupName,
+          lead // <-- include full lead object
+        })
+      });
+
+      if (!res.ok) throw new Error('Failed to add lead to group');
+
+      // Update local state after successful backend update
+      if (!campaignOutreachGroups[selectedCampaign.id]) {
+        campaignOutreachGroups[selectedCampaign.id] = [];
+      }
+      const groups = campaignOutreachGroups[selectedCampaign.id];
+      if (!groups.includes(groupName)) groups.push(groupName);
+
+      console.log('Lead added to group', groupName, lead);
+    } catch (err) {
+      console.error('Error adding lead to group:', err);
     }
-    group.leads.push(lead);
-    console.log('Added lead to group', groupName, lead);
   }
 
   function removeLeadFromCampaign(leadId: string) {
@@ -119,6 +149,8 @@
     leads = [];
     loading = true;
 
+    await fetchOutreachGroups(campaign.id);
+
     await new Promise(r => setTimeout(r, 500));
 
     const res = await fetch('/api/leads', {
@@ -146,6 +178,27 @@
     loading = false;
     scrollToTop();
   }
+
+  async function fetchOutreachGroups(campaignId: string) {
+    try {
+      const res = await fetch(`/api/outreach/groups/${campaignId}`);
+      if (!res.ok) throw new Error('Failed to fetch outreach groups');
+    
+      const groups: string[] = await res.json();
+    
+      // Always include default group A
+      if (!groups.includes('OutreachGroup-A')) {
+        groups.unshift('OutreachGroup-A');
+      }
+    
+      campaignOutreachGroups[campaignId] = groups;
+    } catch (err) {
+      console.error(err);
+      campaignOutreachGroups[campaignId] = ['OutreachGroup-A'];
+    }
+  }
+
+
 
   // ----------------------------
   // Reactive search & pagination
@@ -392,16 +445,19 @@
   {/if}
   
   <!-- AddLeadModal -->
-  {#if showOutreachModal && selectedLeadForModal}
-    <AddLeadModal
-      lead={selectedLeadForModal}
-      campaignId={selectedCampaign?.id}
-      campaignName={selectedCampaign?.name}
-      on:close={closeOutreachModal}
-      on:add={(e) => addLeadToGroup(e.detail.lead, e.detail.groupName)}
-      on:removeFromCampaign={(e) => removeLeadFromCampaign(e.detail.leadId)}
-      on:blacklist={(e) => blacklistLead(e.detail.leadId)}
-    />
+  {#if showOutreachModal && selectedLeadForModal && selectedCampaign}
+  <AddLeadModal
+    lead={selectedLeadForModal}
+    campaignId={selectedCampaign.id}
+    campaignName={selectedCampaign.name}
+    outreachGroups={campaignOutreachGroups[selectedCampaign.id] ?? ['OutreachGroup-A']}
+    on:updateGroups={(e) => updateGroupsForCampaign(e.detail.campaignId, e.detail.groups)}
+    on:add={(e) => addLeadToGroup(e.detail.lead, e.detail.groupName)}
+    on:removeFromCampaign={(e) => removeLeadFromCampaign(e.detail.leadId)}
+    on:blacklist={(e) => blacklistLead(e.detail.leadId)}
+    on:close={closeOutreachModal}
+  />
   {/if}
+
 </main>
  
