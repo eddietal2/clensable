@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
-    import { backButton, buttonBase, greenGradient, greenText } from '$lib/styles';
+  import { backButton, buttonBase, greenGradient, greenText } from '$lib/styles';
 
   type OutreachLead = {
     id: string;
