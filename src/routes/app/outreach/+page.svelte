@@ -92,7 +92,7 @@
           </h2>
         </div>
         <div class="flex space-x-2">
-          <a href="/app/outreach"
+          <a href="/app/outreach/{campaign.campaignId}"
              class={`${greenGradient} ${buttonBase}`}>
             <MessageCircle class="w-4 h-4 mr-1" />
             <span>View Outreach</span>
