@@ -4,7 +4,8 @@
   import { goto } from '$app/navigation';
   import { X, ChevronLeft } from 'lucide-svelte';
   import { buttonBase, greenGradient, blueGradient, greenText } from '$lib/styles';
-    import { fly } from 'svelte/transition';
+  import { fly } from 'svelte/transition';
+  import ConfirmModal from '$lib/components/ConfirmModal.svelte';
 
   let showIntroCard = true;
 
@@ -31,9 +32,12 @@
   let loading = true;
   let error: string | null = null;
 
-  // Mock AI message state
   let messageDraft = '';
+  let generating = false;
   let sending = false;
+  let cancelGeneration = false;
+  let showConfirmModal = false;
+  let textareaEl: HTMLTextAreaElement | null = null;
 
   onMount(async () => {
     try {
@@ -52,10 +56,72 @@
     goto(`/app/outreach/${campaignId}`);
   }
 
+  async function generateMessage() {
+    if (!lead) return;
+    generating = true;
+    cancelGeneration = false;
+    messageDraft = '';
+
+    try {
+      const res = await fetch('/api/outreach/generate-message', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          leadName: lead.leadData.name,
+          leadEmail: lead.leadData.email,
+          campaignName: 'Cleaning Campaign'
+        })
+      });
+
+      if (!res.ok) throw new Error('Failed to generate message');
+
+      const data = await res.json();
+      const candidate = data?.message?.[0];
+      const fullText = candidate?.content?.parts?.[0].text;
+      if (!fullText) throw new Error('No message generated');
+
+      // Typewriter effect with auto-scroll
+      let i = 0;
+      const speed = 25;
+      const interval = setInterval(() => {
+        if (cancelGeneration) {
+          clearInterval(interval);
+          generating = false;
+          return;
+        }
+
+        messageDraft += fullText[i];
+        i++;
+
+        if (textareaEl) textareaEl.scrollTop = textareaEl.scrollHeight;
+
+        if (i >= fullText.length) {
+          clearInterval(interval);
+          generating = false;
+        }
+      }, speed);
+
+    } catch (err: any) {
+      console.error(err);
+      alert(err.message);
+      generating = false;
+    }
+  }
+
+  function cancelMessageGeneration() {
+    cancelGeneration = true;
+  }
+
   function sendMessage() {
     if (!messageDraft.trim() || !lead) return;
+    showConfirmModal = true;
+  }
+
+  async function confirmSend() {
+    showConfirmModal = false;
     sending = true;
-    // Here you would call your API to send email/SMS
+
+    // Simulate sending message (replace with real API)
     setTimeout(() => {
       sending = false;
       messageDraft = '';
@@ -66,9 +132,9 @@
   function markStatus(newStatus: string) {
     if (!lead) return;
     lead.status = newStatus;
-    // API call to persist status can go here
   }
 </script>
+
 
 <main class="p-6 w-4xl mx-auto space-y-6">
   {#if showIntroCard}
@@ -79,23 +145,22 @@
               aria-label="Close">
         <X class="h-5 w-5 text-gray-600" />
       </button>
-  
-      <h2 class="text-2xl font-bold mb-2 jura">AI Assitant Outreach & Tracking</h2>
+
+      <h2 class="text-2xl font-bold mb-2 jura">AI Assistant Outreach & Tracking</h2>
       <p class="text-gray-700">
         A campaign is a targeted outreach effort to potential clients for your cleaning services. 
-        It allows you to define the market segment, geographic area, and messaging for your outreach. 
-        Each campaign will track leads, emails sent, replies, and overall effectiveness so you can focus 
-        on the most promising prospects.
+        Each campaign tracks leads, emails sent, replies, and overall effectiveness.
       </p>
     </div>
   {/if}
+
   <div class="h-4"></div>
+
   {#if loading}
     <p>Loading lead...</p>
   {:else if error}
     <p class="text-red-500">{error}</p>
   {:else if lead}
-    <!-- Back Button -->
     <button class="flex items-center px-4 py-1 rounded text-gray-600 hover:bg-gray-200 hover:text-gray-900 text-sm mb-4"
             on:click={goBack}>
       <ChevronLeft class="w-4 h-4 mr-1"/>
@@ -109,27 +174,37 @@
       {#if lead.leadData.phone}<p>Phone: {lead.leadData.phone}</p>{/if}
       {#if lead.leadData.address}<p>Address: {lead.leadData.address}</p>{/if}
       <p class="text-sm text-gray-500">Status: <strong>{lead.status}</strong></p>
-
-      <!-- Status Buttons -->
-      <div class="flex space-x-2 mt-2">
-        <!-- <button class={`${greenGradient} ${buttonBase} text-sm py-1`} on:click={() => markStatus('contacted')}>Mark Contacted</button>
-        <button class={`${blueGradient} ${buttonBase} text-sm py-1`} on:click={() => markStatus('replied')}>Mark Replied</button> -->
-      </div>
     </section>
 
     <!-- AI Message Draft -->
     <section class="bg-white p-4 rounded-lg shadow space-y-2">
-      <h2 class="font-semibold">Send Message</h2>
+      <div class="flex items-center gap-2">
+        <h2 class="font-semibold">Send Message</h2>
+        {#if generating}
+          <div class="pulse"></div>
+        {/if}
+      </div>
+
       <textarea 
-        bind:value={messageDraft} 
-        class="w-full border rounded p-2 text-sm focus:ring-2 focus:ring-green-300"
-        rows="4"
-        placeholder="Compose an email or SMS using AI..."></textarea>
-      <div class="flex gap-2">
-        <button class={`${blueGradient} ${buttonBase} text-sm py-1 mt-2`} on:click={sendMessage} disabled={sending}>
-          Generate Message
+        bind:value={messageDraft}
+        bind:this={textareaEl}
+        class="w-full border rounded p-2 text-sm focus:ring-2 focus:ring-green-300 cursor"
+        rows="15"
+        placeholder="Compose an email or SMS using AI..."
+      ></textarea>
+
+      <div class="flex gap-2 mt-2">
+        <button class={`${blueGradient} ${buttonBase} text-sm py-1`} on:click={generateMessage} disabled={generating}>
+          {generating ? 'Generating...' : 'Generate Message'}
         </button>
-        <button class={`${greenGradient} ${buttonBase} text-sm py-1 mt-2`} on:click={sendMessage} disabled={sending}>
+
+        {#if generating}
+          <button class="bg-red-500 text-white px-3 py-1 rounded text-sm" on:click={cancelMessageGeneration}>
+            Cancel
+          </button>
+        {/if}
+
+        <button class={`${greenGradient} ${buttonBase} text-sm py-1`} on:click={sendMessage} disabled={sending}>
           {sending ? 'Sending...' : 'Send Message'}
         </button>
       </div>
@@ -138,7 +213,6 @@
     <!-- Activity / History -->
     <section class="bg-white p-4 rounded-lg shadow space-y-2">
       <h2 class="font-semibold">Lead Activity</h2>
-      <!-- Example static list -->
       <ul class="divide-y divide-gray-200 text-sm text-gray-700">
         <li class="py-1">Lead added: 3 days ago</li>
         <li class="py-1">Message sent: 2 days ago</li>
@@ -146,4 +220,46 @@
       </ul>
     </section>
   {/if}
+
+  {#if showConfirmModal}
+    <ConfirmModal 
+      message="Are you sure you want to send this message?" 
+      confirmText="Send" 
+      cancelText="Cancel" 
+      on:confirm={confirmSend} 
+      on:cancel={() => showConfirmModal = false} 
+      loading={sending}
+    />
+  {/if}
 </main>
+
+
+<style>
+  .cursor::after {
+    content: '|';
+    animation: blink 1s step-start infinite;
+    color: gray;
+    margin-left: 1px;
+  }
+
+  @keyframes blink {
+    0%, 50% { opacity: 1; }
+    50.01%, 100% { opacity: 0; }
+  }
+
+  /* Pulsating circle for generating indicator */
+  .pulse {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #10b981; /* green */
+    animation: pulse 1s infinite;
+    margin-left: 8px;
+  }
+
+  @keyframes pulse {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.5); opacity: 0.6; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+</style>
